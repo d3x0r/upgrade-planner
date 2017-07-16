@@ -4,7 +4,7 @@ data:extend({
   {
     type = "selection-tool",
     name = "upgrade-builder",
-    icon = "graphics/builder.png",
+    icon = "__upgrade-planner2__/graphics/builder.png",
     stack_size = 1,
     subgroup = "tool",
     order = "c[automated-construction]-d[upgrade-builder]",
