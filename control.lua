@@ -6,8 +6,6 @@ available_storage_entries = {}
 
 
 function glob_init()
-   game.write_file( "planner.log", "GLOBAL INIT\n", true, 1 );
-
     global["entity-recipes"] = global["entity-recipes"] or {}
     global["config"] = global["config"] or {}
     global["config-tmp"] = global["config-tmp"] or {}
@@ -63,7 +61,6 @@ function get_config_item(player, index, type)
 end
 
 function gui_init(player)
-   game.write_file( "planner.log", "GUI INIT\n", true, 1 );
     if player.gui.top["replacer-config-button"] then
         player.gui.top["replacer-config-button"].destroy() 
     end
@@ -93,7 +90,6 @@ function gui_init(player)
 end
 
 function gui_open_frame(player)
-   game.write_file( "planner.log", "OPEN FRAME\n", true, 1 );
     local flow = mod_gui.get_frame_flow(player)
     local frame = flow["upgrade-planner-config-frame"]
     local storage_frame = flow["upgrade-planner-storage-frame"]
@@ -301,28 +297,29 @@ function gui_open_frame(player)
         name = "upgrade-planner-storage-grid"
     }
 
+    local index = 1;
     if global["storage"][player.name] then
 
         for key, _ in pairs(global["storage"][player.name]) do
             storage_grid.add{
                 type = "label",
                 caption = key .. "        ",
-                name = "upgrade-planner-storage-entry-" .. unique_control_id
+                name = "upgrade-planner-storage-entry-" .. index
             }
 
             storage_grid.add{
                 type = "button",
                 caption = {"upgrade-planner-storage-restore"},
-                name = "upgrade-planner-restore-" .. unique_control_id,
+                name = "upgrade-planner-restore-" .. index,
                 style = "upgrade-planner-small-button"
             }
             storage_grid.add{
                 type = "button",
                 caption = {"upgrade-planner-storage-remove"},
-                name = "upgrade-planner-remove-" .. unique_control_id,
+                name = "upgrade-planner-remove-" .. index,
                 style = "upgrade-planner-small-button"
             }
-            unique_control_id = unique_control_id + 1
+            index = index + 1
         end
 
     end
@@ -545,24 +542,23 @@ function gui_store(player)
     storage_grid.add{
         type = "label",
         caption = name .. "        ",
-        name = "upgrade-planner-storage-entry-" .. unique_control_id
+        name = "upgrade-planner-storage-entry-" .. index
     }
 
     storage_grid.add{
         type = "button",
         caption = {"upgrade-planner-storage-restore"},
-        name = "upgrade-planner-restore-" .. unique_control_id,
+        name = "upgrade-planner-restore-" .. index,
         style = "upgrade-planner-small-button"
     }
 
     storage_grid.add{
         type = "button",
         caption = {"upgrade-planner-storage-remove"},
-        name = "upgrade-planner-remove-" .. unique_control_id,
+        name = "upgrade-planner-remove-" .. index,
         style = "upgrade-planner-small-button"
     }
 
-    unique_control_id = unique_control_id + 1
     gui_display_message(storage_frame, true, "")
     textfield.text = ""
 
@@ -579,7 +575,6 @@ function gui_restore(player, index)
     if not storage_entry then return end
 
     local name = string.match(storage_entry.caption, "^%s*(.-)%s*$")
-game.write_file( "planner.log", "restore name:"..name.."\n", true, 1 );
     if not global["storage"][player.name] or not global["storage"][player.name][name] then return end
 
     global["config-tmp"][player.name] = {}
@@ -631,20 +626,25 @@ function gui_remove(player, index)
 
     local storage_grid = storage_frame["upgrade-planner-storage-grid"]
     local label = storage_grid["upgrade-planner-storage-entry-" .. index]
-    local btn1 = storage_grid["upgrade-planner-restore-" .. index]
-    local btn2 = storage_grid["upgrade-planner-remove-" .. index]
+--    local btn1 = storage_grid["upgrade-planner-restore-" .. index]
+--    local btn2 = storage_grid["upgrade-planner-remove-" .. index]
 
-    if not label or not btn1 or not btn2 then return end
+--    if not label or not btn1 or not btn2 then return end
+    if not label then return end
+
 
     local name = string.match(label.caption, "^%s*(.-)%s*$")
-    table.insert( global["storage_id"][player.name], index );
-    label.destroy()
-    btn1.destroy()
-    btn2.destroy()
 
     global["storage"][player.name][name] = nil
 
-    gui_display_message(storage_frame, true, "")
+    gui_open_frame(player);
+    gui_open_frame(player);
+    local button_flow = mod_gui.get_button_flow(player)
+    button_flow["upgrade-planner-config-button"].style.visible = true
+--    label.destroy()
+--    btn1.destroy()
+--    btn2.destroy()
+--    gui_display_message(storage_frame, true, "")
 
 end
 

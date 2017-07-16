@@ -26,6 +26,8 @@ id message.
 
 ## Changelog
 
+1.3.2 - fix removing configuration and adding a new one at the end.
+
 1.3.1 - fix graphic resource.
 
 1.3.0 - able to upgrade train rails.  Fixes tooltip updates.  Fixes missing translation string.  Auto commits reloaded plans to active plan.

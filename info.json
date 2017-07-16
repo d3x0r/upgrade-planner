@@ -1,7 +1,7 @@
 {
     "name": "upgrade-planner2",
-    "version": "1.3.1",
-    "title": "Upgrade Builder and Planner",
+    "version": "1.3.2",
+    "title": "Upgrade Builder and Planner 1.3",
     "author": "d3x0r & malk0lm & Klonan",
     "description": "Automatically upgrade buildings by hand or with construction robots.",
     "homepage": "https://github.com/d3x0r/upgrade-planner",
