@@ -37,39 +37,39 @@ Version 1.1.10 by malk0lm
 Updated to 0.13.6 by Slayer1557
 Improved to use 0.13 API features by Klonan
 
-- 1.2.17 - Able to upgrade blueprints, also added hotkey for toggling gui visibility and button visiblity
+-1.2.17 - Able to upgrade blueprints, also added hotkey for toggling gui visibility and button visiblity
 
-- 1.2.16 - Hacked in choose elem button
+-1.2.16 - Hacked in choose elem button
 
-- 1.2.15 - 0.15 compatibility, New gui
+-1.2.15 - 0.15 compatibility, New gui
 
-- 1.2.14 - Removed distance chacking as it was annoying, Fixed raised event error.
+-1.2.14 - Removed distance chacking as it was annoying, Fixed raised event error.
 
-- ?? 1.3? where did that go? 
-  1.3.9 - Adds a new item and recipe (unlocked with Upgrade builder technology) - "Upgrade Builder" - that allows you to replace entities on the map using construction robots. Entities are replaced by hand unless you hold shift when selecting an area to mark it for bots to upgrade.
+-?? 1.3? where did that go? 
+  1.3.9 - Adds a new item and recipe (unlocked with Upgrade builder technology) -"Upgrade Builder" - that allows you to replace entities on the map using construction robots. Entities are replaced by hand unless you hold shift when selecting an area to mark it for bots to upgrade.
 
-- Version 1.2.12 - Fixed belt not valid crash
+-Version 1.2.12 - Fixed belt not valid crash
 
-- Version 1.2.12 - Fixed another belt not valid crash
+-Version 1.2.12 - Fixed another belt not valid crash
 
-- Version 1.2.11 - Fixed gui not showing on player joining a game
+-Version 1.2.11 - Fixed gui not showing on player joining a game
 
-- Version 1.2.9 - If you upgrade one half of an underground belt it will try to upgrade the other half
+-Version 1.2.9 - If you upgrade one half of an underground belt it will try to upgrade the other half
 
-- Version 1.2.8 - Fixed error about removed mod items
+-Version 1.2.8 - Fixed error about removed mod items
 
-- Version 1.2.7 - Fixed on_built_entity error
+-Version 1.2.7 - Fixed on_built_entity error
 
-- Version 1.2.6 - Upgrade planner will now raise events preplayer_mined_item, player_mined_item and on_built_entity
+-Version 1.2.6 - Upgrade planner will now raise events preplayer_mined_item, player_mined_item and on_built_entity
 
-- Version 1.2.5 - For factorio 0.14 - Added support for deconstructing trees like this:
+-Version 1.2.5 - For factorio 0.14 - Added support for deconstructing trees like this:
 
-- Version 1.2.3 - Uses better method where possible to replace entities.
+-Version 1.2.3 - Uses better method where possible to replace entities.
 
-- Version 1.2.2 - Minor fixes and further cleanup by Klonan, recipe changed to deconstruction planner, Change from text button to image button
+-Version 1.2.2 - Minor fixes and further cleanup by Klonan, recipe changed to deconstruction planner, Change from text button to image button
 
-- Version 1.2 - I asked Klonan if we could cooperate and incorporate his version of the mod. The result is a much more powerful Upgrade builder. Now you are able to upgrade entities by hand, rather than relying on robots. You can still tell robots to do it by holding the shift key when designating the area.
+-Version 1.2 - I asked Klonan if we could cooperate and incorporate his version of the mod. The result is a much more powerful Upgrade builder. Now you are able to upgrade entities by hand, rather than relying on robots. You can still tell robots to do it by holding the shift key when designating the area.
 
-- Version 1.1.12 - Added German Localization courtesy of Luma88 and Russian courtesy of RikkiLook. BUXFIX: Underground belts will now maintain their orientation when upgraded.
+-Version 1.1.12 - Added German Localization courtesy of Luma88 and Russian courtesy of RikkiLook. BUXFIX: Underground belts will now maintain their orientation when upgraded.
 
 
