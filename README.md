@@ -1,6 +1,6 @@
 # Upgrade Builder and Planner
 
-[ Mod Download https://mods.factorio.com/mods/d3x0r/upgrade-planner2] ![https://mods.factorio.com/mods/d3x0r/upgrade-planner2](images/thumb.png)
+[Mod Download](https://mods.factorio.com/mods/d3x0r/upgrade-planner2] ![icon](images/thumb.png)
 
 Automatically upgrade buildings by hand or with construction robots.
 
