@@ -26,6 +26,12 @@ load the configuration into the current set of upgrades and make it active.  Cli
   - U - show/hide upgrade planner
   - Ctrl-U - show/hide upgrade planner button (top left icon)
 
+## Module upgrades
+
+Work in progress; right now, it can easily, for example, replace Speed-1 to Speed-2 modules; it can even change module types 
+(possibly breaking rules like productivity can only be placed on intermediate products).  Have been ability to configure each slot
+as a module type, swapping no-module to some-module.  If you have any feedback please leave a message in the forum.
+
 
 ## Changelog
 
