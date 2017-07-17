@@ -37,6 +37,18 @@ function count_keys(hashmap)
     return result
 
 end
+function count_keys_dbg(hashmap)
+
+    local result = 0
+
+    for _, __ in pairs(hashmap) do
+        game.write_file( 'planner.log', "map:".._.."="..tostring(__).."\n", true, 1 );
+        result = result + 1
+    end
+
+    return result
+
+end
 
 function get_config_item(player, index, type)
 
@@ -1202,8 +1214,16 @@ function upgrade_blueprint(player)
   if not config then return end
   local entities = stack.get_blueprint_entities()
   for k, entity in pairs (entities) do
+    local items_changed = false;
     for j, entry in pairs (config) do
-      if( entry.is_rail ) then
+      if( entry.is_module ) then
+        --local m_inv = entity.;
+        if entity.items[entry.from] then
+           items_changed = true;
+           entity.items[entry.to] = entity.items[entry.from]
+           entity.items[entry.from] = 0
+        end
+      elseif( entry.is_rail ) then
         if entities[k].name == entry.from_straight_rail then
           entities[k].name = entry.to_straight_rail
           break
@@ -1215,6 +1235,15 @@ function upgrade_blueprint(player)
         entities[k].name = entry.to
         break
       end
+    end
+    if( items_changed ) then
+       local new_items = {};
+       for item, count in pairs (entity.items) do
+         if count > 0 then
+            new_items[item] = count;
+         end
+       end
+       entity.items = new_items;
     end
   end
   local blueprint_icons = player.cursor_stack.blueprint_icons
