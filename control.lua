@@ -730,11 +730,13 @@ function on_selected_area(event)
     if belt.valid then
       local upgrade = nil;
       local upgrade_to = nil;
+      local is_curved_rail = false;
       for i = 1, #config do
         if config[i].is_rail then
           if config[i].from_curved_rail == belt.name then
               upgrade = config[i];
               upgrade_to = config[i].to_curved_rail;
+              is_curved_rail = true;
               break
           elseif config[i].from_straight_rail == belt.name then
               upgrade = config[i];
@@ -750,14 +752,14 @@ function on_selected_area(event)
         end
       end
       if upgrade_to ~= nil then
-        player_upgrade(player,upgrade.from,belt,upgrade.to,upgrade_to,true)
+        player_upgrade(player,upgrade.from,belt,upgrade.to,upgrade_to,true,is_curved_rail)
       end
     end
   end
   global.temporary_ignore = nil
 end
 
-function player_upgrade(player,orig_inv_name,belt,inv_name,upgrade,bool)
+function player_upgrade(player,orig_inv_name,belt,inv_name,upgrade,bool,is_curved_rail)
   if not belt then return end
   if global.temporary_ignore[belt.name] then return end
   local surface = player.surface
@@ -765,19 +767,77 @@ function player_upgrade(player,orig_inv_name,belt,inv_name,upgrade,bool)
     local d = belt.direction
     local f = belt.force
     local p = belt.position
-    local n = belt.name
+    --local n = belt.name
+    local item_count = 1;
+    local pdel = { x=0,y=0, origx=0,origy=0 }
+    if belt.type == 'straight-rail' then
+      if d == 1 then
+      end
+    elseif belt.type == 'curved-rail' then
+      item_count = 4;
+      if d == 1  then -- up to up-right ( down-left to down)  1.7,2.3
+        pdel.x = 1;
+        pdel.y = -3;
+        pdel.origx =-1;
+        pdel.origy =-1;
+
+      elseif d == 6  then -- up-right to right ( left to down-left)  2.3,1.7
+        pdel.x = -2.5;
+        pdel.y = 1;
+        pdel.origx =-1;
+        pdel.origy =-1;
+      elseif d == 3  then -- right to down-right ( up-left to left) 2.3,1.7
+        pdel.x = 1;
+        pdel.y = 1;
+        pdel.origx =1;
+        pdel.origy =-1;
+      elseif d == 0  then -- down-right to down (up to up-left)  1.7,2.3
+        pdel.x = -3;
+        pdel.y = -3;
+        pdel.origx =1;
+        pdel.origy =-1;
+      elseif d == 5 then   -- down to down-left (up-right to up) 1.7,2.3
+        pdel.x = -3;
+        pdel.y = 1;
+        pdel.origx =1;
+        pdel.origy =1;
+      elseif d == 2 then   -- down-left to left (right to up-right)  2.3,1.7
+        pdel.x = 0.5;
+        pdel.y = -3;
+        pdel.origx =1;
+        pdel.origy =1;
+      elseif d == 7 then   -- left to up-left (down-right to right) 2.3,1.6
+        pdel.x = -2.5;
+        pdel.y = -3;
+        pdel.origx =-1;
+        pdel.origy =1;
+      elseif d == 4 then   -- up-left to up (down to down-right)  1.7,2.3; 
+        pdel.x = 1;
+        pdel.y = 1;
+        pdel.origx =-1;
+        pdel.origy =1;
+      end
+
+      if d == 3 or d == 0  then
+        p = { x=p.x-2, y = p.y };
+      elseif d == 7 or d == 4 then
+        p = { x=p.x, y = p.y-2 };
+      elseif d == 5 or d == 2 then
+        p = { x=p.x-2, y = p.y-2 };
+      end
+    end
     if player.can_reach_entity(belt) or in_range_check_is_annoying then
       local new_item
       script.raise_event(defines.events.on_preplayer_mined_item,{player_index = player.index, entity = belt})
       if upgrade ~="deconstruction-planner" then --Goddamn legacy features
         if belt.type == "underground-belt" then 
           if belt.neighbours and bool then
-            player_upgrade(player,orig_inv_name,belt.neighbours,inv_name,upgrade,false)
+            player_upgrade(player,orig_inv_name,belt.neighbours,inv_name,upgrade,false,is_curved_rail)
           end
           new_item = surface.create_entity
           {
             name = upgrade, 
-            position = belt.position, 
+            position = p, 
             force = belt.force, 
             fast_replace = true, 
             direction = belt.direction, 
@@ -789,7 +849,7 @@ function player_upgrade(player,orig_inv_name,belt,inv_name,upgrade,bool)
           new_item = surface.create_entity
           {
             name = upgrade, 
-            position = belt.position, 
+            position = p, 
             force = belt.force, 
             fast_replace = true, 
             direction = belt.direction, 
@@ -800,27 +860,30 @@ function player_upgrade(player,orig_inv_name,belt,inv_name,upgrade,bool)
           new_item = surface.create_entity
           {
             name = upgrade, 
-            position = belt.position, 
+            position = p, 
             force = belt.force, 
             fast_replace = true, 
             direction = belt.direction, 
             spill=false
           }
         end
-        
         if belt.valid then
           if new_item then 
             if new_item.valid then new_item.destroy() end
           end
-          local a = {{p.x-0.5,p.y-0.5},{p.x+0.5,p.y+0.5}}
+          local a = belt.bounding_box;
+          --local a = {left_top={x=(p.x-0.5)-pdel.x,y=(p.y-0.5)-pdel.y},right_bottom={x=(p.x+0.5)-pdel.x,y=(p.y+0.5)-pdel.y}}
           --If the create entity fast replace didn't work, we use this blueprint technique
           player.cursor_stack.set_stack{name = "blueprint", count = 1}
           player.cursor_stack.create_blueprint{surface = surface, force = belt.force,area = a}
           local old_blueprint = player.cursor_stack.get_blueprint_entities()
           local record_index = nil
           for index, entity in pairs (old_blueprint) do
-            if (entity.name == belt.name) then
+            if( entity.direction == nil ) then entity.direction = 0; end
+            if (entity.name == belt.name and entity.direction==belt.direction) then
               record_index = index
+              entity.position.x = pdel.origx;
+              entity.position.y = pdel.origy;
             else
               old_blueprint[index] = nil
             end
@@ -830,7 +893,7 @@ function player_upgrade(player,orig_inv_name,belt,inv_name,upgrade,bool)
           player.cursor_stack.set_stack{name = "blueprint", count = 1}
           player.cursor_stack.set_blueprint_entities(old_blueprint)
           if not player.cheat_mode then
-            player.insert{name = orig_inv_name, count = 1}
+            player.insert{name = orig_inv_name, count = item_count}
           end
           script.raise_event
           (
@@ -840,7 +903,7 @@ function player_upgrade(player,orig_inv_name,belt,inv_name,upgrade,bool)
               item_stack = 
               {
                 name = orig_inv_name,
-                count = 1
+                count = item_count
               }
             }
           )
@@ -853,23 +916,29 @@ function player_upgrade(player,orig_inv_name,belt,inv_name,upgrade,bool)
               inventories[index].contents = belt.get_inventory(index).get_contents()
             end
           end
+
           belt.destroy()
-          player.cursor_stack.build_blueprint{surface = surface, force = f, position = p}
+
+          player.cursor_stack.build_blueprint{surface = surface, force_build=true, force = f, position = p}
           local ghost = surface.find_entities_filtered{area = a, name = "entity-ghost"}
-          player.remove_item{name = inv_name, count = 1}
-          local p_x = player.position.x
-          local p_y = player.position.y
-          while ghost[1]~= nil do
-            ghost[1].revive()
-            player.teleport({math.random(p_x -5, p_x +5),math.random(p_y -5, p_y +5)})
-            ghost = surface.find_entities_filtered{area = a, name = "entity-ghost"}
+
+          player.remove_item{name = inv_name, count = item_count}
+          if ghost[1]~= nil then
+            local p_x = player.position.x
+            local p_y = player.position.y
+
+            while ghost[1]~= nil do
+              ghost[1].revive()
+              player.teleport({math.random(p_x -5, p_x +5),math.random(p_y -5, p_y +5)})
+              ghost = surface.find_entities_filtered{area = a, name = "entity-ghost"}
+            end
+            player.teleport({p_x,p_y})
           end
-          player.teleport({p_x,p_y})
           local assembling = surface.find_entities_filtered{area = a, name = upgrade}
           if not assembling[1] then 
             player.print("Upgrade planner error - Entity to raise was not found")
             player.cursor_stack.set_stack{name = "upgrade-builder", count = 1}
-            player.insert{name = n, count = 1}
+            player.insert{name = orig_inv_name, count = item_count}
             return 
           end
           script.raise_event(defines.events.on_built_entity,{player_index = player.index, created_entity = assembling[1]})
@@ -888,14 +957,14 @@ function player_upgrade(player,orig_inv_name,belt,inv_name,upgrade,bool)
           end
           player.cursor_stack.set_stack{name = "upgrade-builder", count = 1}      
         else 
-          player.remove_item{name = inv_name, count = 1}
-          player.insert{name = n, count = 1}
-          script.raise_event(defines.events.on_player_mined_item,{player_index = player.index, item_stack = {name = n, count = 1}})
+          player.remove_item{name = inv_name, count = item_count}
+          player.insert{name = orig_inv_name, count = item_count}
+          script.raise_event(defines.events.on_player_mined_item,{player_index = player.index, item_stack = {name = orig_inv_name, count = item_count}})
           script.raise_event(defines.events.on_built_entity,{player_index = player.index, created_entity = new_item})
         end
       else
-        player.insert{name = n, count = 1}
-        script.raise_event(defines.events.on_player_mined_item,{player_index = player.index, item_stack = {name = n, count = 1}})
+        player.insert{name = orig_inv_name, count = item_count}
+        script.raise_event(defines.events.on_player_mined_item,{player_index = player.index, item_stack = {name = orig_inv_name, count = item_count}})
         belt.destroy()
       end
     else 

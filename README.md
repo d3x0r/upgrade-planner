@@ -26,6 +26,10 @@ id message.
 
 ## Changelog
 
+1.3.3 - fix an error putting inventory back into player inventory with curved rails.
+  - curved rails are 4 items not 1; fix counts used and returned to player
+  - fixed certain overlapped rail location moving the position of the replacement.
+
 1.3.2 - fix removing configuration and adding a new one at the end.
 
 1.3.1 - fix graphic resource.
