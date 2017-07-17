@@ -22,11 +22,14 @@ by bots; so you can select much larger areas to upgrade.
 The second dialog opened to the right allows saving a set of updates as a configuration that can later be recalled.  Click the restore button to
 load the configuration into the current set of upgrades and make it active.  Click the Remove button to remove a configuration. 
 
-## Known Bugs
-When removing a configuration set from the middle of the list, re-adding a new item causes a script crash which ends the game with a duplicate control
-id message.
+## Keys
+  - U - show/hide upgrade planner
+  - Ctrl-U - show/hide upgrade planner button (top left icon)
+
 
 ## Changelog
+
+1.3.4 - Add ability to upgrade modules.
 
 1.3.3 - fix an error putting inventory back into player inventory with curved rails.
   - curved rails are 4 items not 1; fix counts used and returned to player

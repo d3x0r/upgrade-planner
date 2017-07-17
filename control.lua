@@ -122,8 +122,14 @@ function gui_open_frame(player)
             global["config-tmp"][player.name][i] = { from = "", to = "" }
         else
             global["config-tmp"][player.name][i] = {
-                from = global["config"][player.name][i].from, 
-                to = global["config"][player.name][i].to
+                is_module = global["config"][player.name][i].is_module,
+                is_rail = global["config"][player.name][i].is_rail,
+                from = global["config"][player.name][i].from,
+                to = global["config"][player.name][i].to,
+                from_curved_rail = global["config"][player.name][i].from_curved_rail,
+                from_straight_rail = global["config"][player.name][i].from_straight_rail,
+                to_curved_rail = global["config"][player.name][i].to_curved_rail,
+                to_straight_rail = global["config"][player.name][i].to_straight_rail
             }
         end
         
@@ -348,9 +354,11 @@ function gui_save_changes(player)
                 global["config"][player.name][i] = { from = "", to = "" }
 
             else
+                --game.write_file( 'planner.log', '(to config from tmp)Module is:'..tostring(global["config-tmp"][player.name][i].is_module)..'\n',true,1);
                 global["config"][player.name][i] = {
                     from = global["config-tmp"][player.name][i].from,
                     to = global["config-tmp"][player.name][i].to,
+                    is_module = global["config-tmp"][player.name][i].is_module,
                     is_rail = global["config-tmp"][player.name][i].is_rail,
                     from_curved_rail = global["config-tmp"][player.name][i].from_curved_rail,
                     from_straight_rail = global["config-tmp"][player.name][i].from_straight_rail,
@@ -409,6 +417,7 @@ function gui_set_rule(player, type, index, element )
     local frame = mod_gui.get_frame_flow(player)["upgrade-planner-config-frame"]
     local ruleset_grid = frame["upgrade-planner-ruleset-grid"]
     if not frame or not global["config-tmp"][player.name] then return end
+    local is_module = false;
     local is_rail = false;
     local curved_rail = nil;
     local straight_rail = nil;
@@ -419,10 +428,12 @@ function gui_set_rule(player, type, index, element )
       return
     end
 
-    if game.item_prototypes[name] and game.item_prototypes[name].straight_rail and game.item_prototypes[name].curved_rail  then
+    if game.item_prototypes[name].type == 'rail-planner' and game.item_prototypes[name].straight_rail and game.item_prototypes[name].curved_rail  then
       is_rail = true;
       straight_rail = game.item_prototypes[name].straight_rail.name;
       curved_rail = game.item_prototypes[name].curved_rail.name;
+    elseif game.item_prototypes[name].type == 'module' then
+       is_module = true;
     end
 
     if name ~= "deconstruction-planner" or type ~= "to" then
@@ -467,7 +478,9 @@ function gui_set_rule(player, type, index, element )
 
     end
 
+    --game.write_file( 'planner.log', '(set config-tmp)Module is:'..tostring(is_module)..'\n',true,1);
     global["config-tmp"][player.name][index][type] = name
+    global["config-tmp"][player.name][index]["is_module"] = is_module
     global["config-tmp"][player.name][index]["is_rail"] = is_rail
     global["config-tmp"][player.name][index][type.."_curved_rail"] = curved_rail
     global["config-tmp"][player.name][index][type.."_straight_rail"] = straight_rail
@@ -520,9 +533,11 @@ function gui_store(player)
     local i = 0
 
     for i = 1, #global["config-tmp"][player.name] do
+        --game.write_file( 'planner.log', '(set storage from config-tmp)Module is:'..tostring(global["config-tmp"][player.name][i].is_module)..'\n',true,1);
         global["storage"][player.name][name][i] = {
             from = global["config-tmp"][player.name][i].from,
             to = global["config-tmp"][player.name][i].to,
+            is_module = global["config-tmp"][player.name][i].is_module,
             is_rail = global["config-tmp"][player.name][i].is_rail,
             from_curved_rail = global["config-tmp"][player.name][i].from_curved_rail,
             from_straight_rail = global["config-tmp"][player.name][i].from_straight_rail,
@@ -587,9 +602,11 @@ function gui_restore(player, index)
             global["config-tmp"][player.name][i] = { from = "", to = "" }
         else
             local storage = global["storage"][player.name][name][i];
+            --game.write_file( 'planner.log', '(set config_tmp from storage)Module is:'..tostring( storage.is_module)..'\n',true,1);
             global["config-tmp"][player.name][i] = {
                 from = storage.from,
                 to = storage.to,
+                is_module = storage.is_module,
                 is_rail = storage.is_rail,
                 from_curved_rail = storage.from_curved_rail,
                 from_straight_rail = storage.from_straight_rail,
@@ -732,6 +749,7 @@ function on_selected_area(event)
       local upgrade_to = nil;
       local is_curved_rail = false;
       for i = 1, #config do
+        if global.temporary_ignore[config[i].from] then break end
         if config[i].is_rail then
           if config[i].from_curved_rail == belt.name then
               upgrade = config[i];
@@ -743,11 +761,18 @@ function on_selected_area(event)
               upgrade_to = config[i].to_straight_rail;
               break
           end
+        elseif config[i].is_module then
+          if player.get_item_count(config[i].to) > 0 or player.cheat_mode then 
+            player_module_upgrade(player,belt,config[i].from,config[i].to);
+          else
+            global.temporary_ignore[config[i].from] = true
+            surface.create_entity{name = "flying-text", position = {belt.position.x-1.3,belt.position.y-0.5}, text = {"insufficient-items"}, color = {r=1,g=0.6,b=0.6}}
+          end
         else
           if config[i].from == belt.name then
               upgrade = config[i];
               upgrade_to = config[i].to;
-              break
+              break;
           end
         end
       end
@@ -759,16 +784,39 @@ function on_selected_area(event)
   global.temporary_ignore = nil
 end
 
+function player_module_upgrade(player,belt,from,to)
+  local m_inv = belt.get_module_inventory();
+  if m_inv then
+     local m_content = m_inv.get_contents();
+     for item, count in pairs (m_content) do
+       if player.get_item_count(to) >= count or player.cheat_mode then 
+         if( item == from ) then
+           m_inv.remove( {name=from, count=count} );
+           m_inv.insert( {name=to, count=count} );
+           player.insert( {name=from, count=count} );
+           player.remove_item( {name=to, count=count} );
+         end
+       else
+          surface.create_entity{name = "flying-text", position = {belt.position.x-1.3,belt.position.y-0.5}, text = {"insufficient-items"}, color = {r=1,g=0.6,b=0.6}}
+          global.temporary_ignore[from] = true
+       end
+     end
+  else
+     -- belt entity doesn't support modules  
+  end
+end
+
 function player_upgrade(player,orig_inv_name,belt,inv_name,upgrade,bool,is_curved_rail)
+  local item_count = 1;
   if not belt then return end
   if global.temporary_ignore[belt.name] then return end
   local surface = player.surface
-  if player.get_item_count(inv_name) > 0 or player.cheat_mode then 
+  if is_curved_rail then item_count=4 end
+  if player.get_item_count(inv_name) >= item_count or player.cheat_mode then 
     local d = belt.direction
     local f = belt.force
     local p = belt.position
     --local n = belt.name
-    local item_count = 1;
     local pdel = { x=0,y=0, origx=0,origy=0 }
     if belt.type == 'straight-rail' then
       if d == 1 then
@@ -972,7 +1020,7 @@ function player_upgrade(player,orig_inv_name,belt,inv_name,upgrade,bool,is_curve
     end
   else
     global.temporary_ignore[orig_inv_name] = true
-    surface.create_entity{name = "flying-text", position = {belt.position.x-1.3,belt.position.y-0.5}, text = "Insufficient items", color = {r=1,g=0.6,b=0.6}}
+    surface.create_entity{name = "flying-text", position = {belt.position.x-1.3,belt.position.y-0.5}, text = {"insufficient-items"}, color = {r=1,g=0.6,b=0.6}}
   end
 end
 
