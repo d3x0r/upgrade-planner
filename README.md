@@ -4,6 +4,8 @@
 
 Automatically upgrade buildings by hand or with construction robots.
 
+[Forum thread](https://forums.factorio.com/viewtopic.php?uid=44344&f=92&t=50975)
+
 Use button in upper left of screen to access configuration GUI.  Drop an item onto a square in the left column or left-click an empty space to 
 show item picker dialog.  The left item is the item to convert from.  The items on the right side are the items to replace the left item.
 
