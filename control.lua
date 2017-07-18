@@ -828,7 +828,12 @@ function player_upgrade(player,orig_inv_name,belt,inv_name,upgrade,bool,is_curve
     local d = belt.direction
     local f = belt.force
     local p = belt.position
-    --local n = belt.name
+    local inserter_pickup = belt.pickup_position;
+    local inserter_drop = belt.drop_position;
+    --local inserter_drop_target = belt.drop_target;
+    --local inserter_pickup_target = belt.pickup_target;
+
+
     local pdel = { x=0,y=0, origx=0,origy=0 }
     if belt.type == 'straight-rail' then
       if d == 1 then
@@ -1017,6 +1022,13 @@ function player_upgrade(player,orig_inv_name,belt,inv_name,upgrade,bool,is_curve
           end
           player.cursor_stack.set_stack{name = "upgrade-builder", count = 1}      
         else 
+          --game.write_file( "planner.log", "Normal Replaceable.\n", true, 1 );
+          if( new_item.type == "inserter" ) then
+             new_item.pickup_position = inserter_pickup;
+             new_item.drop_position = inserter_drop;
+             --game.write_file( "planner.log", "Normal Replaceable:"..tostring(new_item.drop_target)..":"..tostring(inserver_drop_target).."  "..tostring(new_item.pickup_target)..":"..tostring(inserver_pickup_target).."\n", true, 1 );
+          end
+
           player.remove_item{name = inv_name, count = item_count}
           player.insert{name = orig_inv_name, count = item_count}
           script.raise_event(defines.events.on_player_mined_item,{player_index = player.index, item_stack = {name = orig_inv_name, count = item_count}})

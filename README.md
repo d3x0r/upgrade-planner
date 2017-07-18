@@ -35,6 +35,8 @@ as a module type, swapping no-module to some-module.  If you have any feedback p
 
 ## Changelog
 
+1.3.6 - Add copy of inserter pickup and drop position.  (Bob's Inserters support)
+
 1.3.5 - Add upgrading blueprint entity's modules
 
 1.3.4 - Add ability to upgrade modules.
