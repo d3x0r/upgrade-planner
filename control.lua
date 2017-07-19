@@ -828,8 +828,8 @@ function player_upgrade(player,orig_inv_name,belt,inv_name,upgrade,bool,is_curve
     local d = belt.direction
     local f = belt.force
     local p = belt.position
-    local inserter_pickup = belt.pickup_position;
-    local inserter_drop = belt.drop_position;
+    local inserter_pickup = nil;
+    local inserter_drop = nil;
     --local inserter_drop_target = belt.drop_target;
     --local inserter_pickup_target = belt.pickup_target;
 
@@ -922,6 +922,10 @@ function player_upgrade(player,orig_inv_name,belt,inv_name,upgrade,bool,is_curve
             spill=false
           }
         else
+          if( belt.type == "inserter" ) then
+            inserter_pickup = belt.pickup_position;
+            inserter_drop = belt.drop_position;
+          end
           new_item = surface.create_entity
           {
             name = upgrade, 
