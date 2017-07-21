@@ -460,8 +460,7 @@ function gui_set_rule(player, type, index, element )
             for i = 1, #global["config-tmp"][player.name] do
                 if index ~= i and global["config-tmp"][player.name][i].from == name then
                     gui_display_message(frame, false, "upgrade-planner-item-already-set")
-                    element.elem_value = nil
-                    element.tooltip = ''
+                    element.elem_value = global["config-tmp"][player.name][index][type]
                     return
                 end
             end
@@ -474,15 +473,13 @@ function gui_set_rule(player, type, index, element )
 
             if related == name then
                 gui_display_message(frame, false, "upgrade-planner-item-is-same")
-                element.elem_value = nil
-                element.tooltip = ''
+                element.elem_value = global["config-tmp"][player.name][index][type]
                 return
             end
 
             if get_type(name) ~= get_type(related) and (not is_exception(get_type(name), get_type(related))) then
                 gui_display_message(frame, false, "upgrade-planner-item-not-same-type")
-                element.elem_value = nil
-                element.tooltip = ''
+                element.elem_value = global["config-tmp"][player.name][index][type]
                 return
             end
 

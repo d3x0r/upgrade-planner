@@ -35,6 +35,8 @@ as a module type, swapping no-module to some-module.  If you have any feedback p
 
 ## Changelog
 
+1.3.8 - If new item is an error; restore previous item instead of clearing square.  (Item is different type, item already in list, makes the item the same)
+
 1.3.7 - fix upgrading items that are not inserters. ( can't get inserter properties on non inserters)
 
 1.3.6 - Add copy of inserter pickup and drop position.  (Bob's Inserters support)
