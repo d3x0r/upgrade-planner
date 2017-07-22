@@ -769,66 +769,6 @@ script.on_init(function()
 
 end)
 
-script.on_event(defines.events.on_player_selected_area, function(event)
-  on_selected_area(event)
-  remove_trees(event)
-end)
-
-script.on_event(defines.events.on_player_alt_selected_area, function(event)
-  on_alt_selected_area(event)
-  bot_remove_trees(event)
-end)
-
-local function on_selected_area(event)
-  if event.item ~= "upgrade-builder" then return end--If its a upgrade builder 
-  
-  local player = game.players[event.player_index]
-  local config = global["config"][player.name]
-  if config == nil then return end
-  
-  local surface = player.surface
-  global.temporary_ignore = {}
-  for k, belt in pairs (event.entities) do --Get the items that are set to be upgraded
-    if belt.valid then
-      local upgrade = nil;
-      local upgrade_to = nil;
-      local is_curved_rail = false;
-      for i = 1, #config do
-        if global.temporary_ignore[config[i].from] then break end
-        if config[i].is_rail then
-          if config[i].from_curved_rail == belt.name then
-              upgrade = config[i];
-              upgrade_to = config[i].to_curved_rail;
-              is_curved_rail = true;
-              break
-          elseif config[i].from_straight_rail == belt.name then
-              upgrade = config[i];
-              upgrade_to = config[i].to_straight_rail;
-              break
-          end
-        elseif config[i].is_module then
-          if player.get_item_count(config[i].to) > 0 or player.cheat_mode then 
-            player_module_upgrade(player,belt,config[i].from,config[i].to);
-          else
-            global.temporary_ignore[config[i].from] = true
-            surface.create_entity{name = "flying-text", position = {belt.position.x-1.3,belt.position.y-0.5}, text = {"insufficient-items"}, color = {r=1,g=0.6,b=0.6}}
-          end
-        else
-          if config[i].from == belt.name then
-              upgrade = config[i];
-              upgrade_to = config[i].to;
-              break;
-          end
-        end
-      end
-      if upgrade_to ~= nil then
-        player_upgrade(player,upgrade.from,belt,upgrade.to,upgrade_to,true,is_curved_rail)
-      end
-    end
-  end
-  global.temporary_ignore = nil
-end
-
 local function player_module_upgrade(player,belt,from,to)
   local m_inv = belt.get_module_inventory();
   if m_inv then
@@ -1131,6 +1071,37 @@ local function remove_trees(event)
   end
 end
 
+local function bot_upgrade(player,belt,upgrade,bool)
+  if not belt then return end
+  local surface = player.surface
+  local p = belt.position
+  local d = belt.direction
+  local f = belt.force
+  local p = belt.position
+  local a = {{p.x-0.5,p.y-0.5},{p.x+0.5,p.y+0.5}}
+  if upgrade == "deconstruction-planner" then
+    belt.order_deconstruction(f)
+    return
+  end
+  
+  if belt.type == "underground-belt" then 
+    if belt.neighbours and bool then
+      bot_upgrade(player,belt.neighbours, upgrade, false)
+    end
+  end
+  
+  player.cursor_stack.set_stack{name = "blueprint", count = 1}
+  player.cursor_stack.create_blueprint{surface = surface, force = belt.force,area = a}
+  local old_blueprint = player.cursor_stack.get_blueprint_entities()
+  old_blueprint[1].name = upgrade
+  player.cursor_stack.set_stack{name = "blueprint", count = 1}
+  player.cursor_stack.set_blueprint_entities(old_blueprint)
+  belt.order_deconstruction(f)
+  player.cursor_stack.build_blueprint{surface = surface, force = f, position = p}
+  player.cursor_stack.set_stack{name = "upgrade-builder", count = 1}
+
+end
+
 function on_alt_selected_area(event)
 --this is a lot simpler... but less cool
   if event.item == "upgrade-builder" then
@@ -1170,36 +1141,58 @@ function on_alt_selected_area(event)
   end
 end
 
-local function bot_upgrade(player,belt,upgrade,bool)
-  if not belt then return end
-  local surface = player.surface
-  local p = belt.position
-  local d = belt.direction
-  local f = belt.force
-  local p = belt.position
-  local a = {{p.x-0.5,p.y-0.5},{p.x+0.5,p.y+0.5}}
-  if upgrade == "deconstruction-planner" then
-    belt.order_deconstruction(f)
-    return
-  end
+
+local function on_selected_area(event)
+  if event.item ~= "upgrade-builder" then return end--If its a upgrade builder 
   
-  if belt.type == "underground-belt" then 
-    if belt.neighbours and bool then
-      bot_upgrade(player,belt.neighbours, upgrade, false)
+  local player = game.players[event.player_index]
+  local config = global["config"][player.name]
+  if config == nil then return end
+  
+  local surface = player.surface
+  global.temporary_ignore = {}
+  for k, belt in pairs (event.entities) do --Get the items that are set to be upgraded
+    if belt.valid then
+      local upgrade = nil;
+      local upgrade_to = nil;
+      local is_curved_rail = false;
+      for i = 1, #config do
+        if global.temporary_ignore[config[i].from] then break end
+        if config[i].is_rail then
+          if config[i].from_curved_rail == belt.name then
+              upgrade = config[i];
+              upgrade_to = config[i].to_curved_rail;
+              is_curved_rail = true;
+              break
+          elseif config[i].from_straight_rail == belt.name then
+              upgrade = config[i];
+              upgrade_to = config[i].to_straight_rail;
+              break
+          end
+        elseif config[i].is_module then
+          if player.get_item_count(config[i].to) > 0 or player.cheat_mode then 
+            player_module_upgrade(player,belt,config[i].from,config[i].to);
+          else
+            global.temporary_ignore[config[i].from] = true
+            surface.create_entity{name = "flying-text", position = {belt.position.x-1.3,belt.position.y-0.5}, text = {"insufficient-items"}, color = {r=1,g=0.6,b=0.6}}
+          end
+        else
+          if config[i].from == belt.name then
+              upgrade = config[i];
+              upgrade_to = config[i].to;
+              break;
+          end
+        end
+      end
+      if upgrade_to ~= nil then
+        player_upgrade(player,upgrade.from,belt,upgrade.to,upgrade_to,true,is_curved_rail)
+      end
     end
   end
-  
-  player.cursor_stack.set_stack{name = "blueprint", count = 1}
-  player.cursor_stack.create_blueprint{surface = surface, force = belt.force,area = a}
-  local old_blueprint = player.cursor_stack.get_blueprint_entities()
-  old_blueprint[1].name = upgrade
-  player.cursor_stack.set_stack{name = "blueprint", count = 1}
-  player.cursor_stack.set_blueprint_entities(old_blueprint)
-  belt.order_deconstruction(f)
-  player.cursor_stack.build_blueprint{surface = surface, force = f, position = p}
-  player.cursor_stack.set_stack{name = "upgrade-builder", count = 1}
-
+  global.temporary_ignore = nil
 end
+
+
 
 local function bot_remove_trees(event)
   if event.item ~= "upgrade-builder" then return end
@@ -1310,6 +1303,18 @@ local function upgrade_blueprint(player)
   stack.set_blueprint_entities(entities)
   player.print({"blueprint-upgrade-sucessful"})
 end
+
+script.on_event(defines.events.on_player_selected_area, function(event)
+  on_selected_area(event)
+  remove_trees(event)
+end)
+
+script.on_event(defines.events.on_player_alt_selected_area, function(event)
+  on_alt_selected_area(event)
+  bot_remove_trees(event)
+end)
+
+
 
 script.on_event("upgrade-planner", function(event)
   local player = game.players[event.player_index]
