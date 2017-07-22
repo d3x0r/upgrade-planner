@@ -25,15 +25,9 @@ data:extend({
     subgroup = "module",
     category = "speed",
     order = "a",
-    flags = {"goes-to-quickbar"},
-    selection_color = {r = 0.2, g = 0.8, b = 0.2, a = 0.2},
-    alt_selection_color = {r = 0.2, g = 0.2, b = 0.8, a = 0.2},
-    selection_mode = {"buildable-type"},
-    alt_selection_mode = {"buildable-type"},
-    selection_cursor_box_type = "entity",
-    alt_selection_cursor_box_type = "copy",
+    flags = {},
     tier = 1,
-    effect = { speed = {bonus = 0.0}, consumption = {bonus = 0.0}}
+    effect = { speed = {bonus = 0.0}, productivity={bonus=0.0}, pollution={bonus=1.0}, consumption = {bonus = 0.0}}
     
   },
   {
