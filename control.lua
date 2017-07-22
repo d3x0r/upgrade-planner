@@ -4,7 +4,7 @@ local MAX_CONFIG_SIZE = 16
 local MAX_STORAGE_SIZE = 12
 local in_range_check_is_annoying = true
 local available_storage_entries = {}
-
+local save_names = {}
 
 local function glob_init()
     global["entity-recipes"] = global["entity-recipes"] or {}
@@ -319,15 +319,15 @@ local function gui_open_frame(player)
     }
 
     local index = 1;
+    save_names = {};
     if global["storage"][player.name] then
-
         for key, _ in pairs(global["storage"][player.name]) do
+            save_names[index] = key;
             storage_grid.add{
                 type = "label",
                 caption = key .. "        ",
                 name = "upgrade-planner-storage-entry-" .. index
             }
-
             storage_grid.add{
                 type = "button",
                 caption = {"upgrade-planner-storage-restore"},
@@ -533,7 +533,7 @@ local function gui_store(player, overwrite, index)
     local name
     local storage_frame = mod_gui.get_frame_flow(player)["upgrade-planner-storage-frame"]
     local textfield;
-    if not ovewrite then
+    if not overwrite then
         if not storage_frame then return end
 
         textfield = storage_frame["upgrade-planner-storage-buttons"]["upgrade-planner-storage-name"]
@@ -569,40 +569,43 @@ local function gui_store(player, overwrite, index)
         }
     end
 
-    local storage_grid = storage_frame["upgrade-planner-storage-grid"]
-    local index = count_keys(global["storage"][player.name]) + 1
-
-    if index > MAX_STORAGE_SIZE + 1 then
-        gui_display_message(storage_frame, true, "upgrade-planner-storage-too-long")
-        return
+    if not overwite then
+        local storage_grid = storage_frame["upgrade-planner-storage-grid"]
+        local index = count_keys(global["storage"][player.name]) + 1
+        
+        if index > MAX_STORAGE_SIZE + 1 then
+            gui_display_message(storage_frame, true, "upgrade-planner-storage-too-long")
+            return
+        end
+        
+        storage_grid.add{
+            type = "label",
+            caption = name .. "        ",
+            name = "upgrade-planner-storage-entry-" .. index
+        }
+        save_names[index] = name;
+	--log( "save_names:"..index..":"..save_names[index] );
+        
+        storage_grid.add{
+            type = "button",
+            caption = {"upgrade-planner-storage-restore"},
+            name = "upgrade-planner-restore-" .. index,
+            style = "upgrade-planner-small-button"
+        }
+        
+        storage_grid.add{
+            type = "button",
+            caption = {"upgrade-planner-storage-remove"},
+            name = "upgrade-planner-remove-" .. index,
+            style = "upgrade-planner-small-button"
+        }
+        storage_grid.add{
+            type = "button",
+            caption = {"upgrade-planner-storage-replace"},
+            name = "upgrade-planner-replace-"..index,
+            style = "upgrade-planner-small-button"
+        }
     end
-
-    storage_grid.add{
-        type = "label",
-        caption = name .. "        ",
-        name = "upgrade-planner-storage-entry-" .. index
-    }
-
-    storage_grid.add{
-        type = "button",
-        caption = {"upgrade-planner-storage-restore"},
-        name = "upgrade-planner-restore-" .. index,
-        style = "upgrade-planner-small-button"
-    }
-
-    storage_grid.add{
-        type = "button",
-        caption = {"upgrade-planner-storage-remove"},
-        name = "upgrade-planner-remove-" .. index,
-        style = "upgrade-planner-small-button"
-    }
-    storage_grid.add{
-        type = "button",
-        caption = {"upgrade-planner-storage-replace"},
-        name = "upgrade-planner-replace-"..index,
-        style = "upgrade-planner-small-button"
-    }
-
     gui_display_message(storage_frame, true, "")
     textfield.text = ""
 
@@ -719,7 +722,14 @@ script.on_event(defines.events.on_gui_click, function(event)
                 gui_restore(player, tonumber(index))
                 gui_save_changes(player)
             elseif type == "replace" then
-                gui_store(player, true, storage_grid["upgrade-planner-storage-entry-" .. index].text )
+                local storage_frame = mod_gui.get_frame_flow(player)["upgrade-planner-storage-frame"]
+                local storage_grid = storage_frame["upgrade-planner-storage-grid"]
+                if #save_names == 0 then
+                    for key, _ in pairs(global["storage"][player.name]) do
+                        save_names[index] = key;
+        	    end
+                end
+                gui_store(player, true, save_names[index] );
             elseif type == "remove" then
                 gui_remove(player, tonumber(index))
             elseif type == "clear" then
@@ -1323,7 +1333,6 @@ script.on_event("upgrade-planner-hide", function(event)
     button_flow["upgrade-planner-config-button"].style.visible = not button_flow["upgrade-planner-config-button"].style.visible
   end
 end)
-
 
 
 
