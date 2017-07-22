@@ -532,11 +532,11 @@ local function gui_store(player, overwrite, index)
     global["storage"][player.name] = global["storage"][player.name] or {}
     local name
     local storage_frame = mod_gui.get_frame_flow(player)["upgrade-planner-storage-frame"]
-    local textfield;
+    local textfield = storage_frame["upgrade-planner-storage-buttons"]["upgrade-planner-storage-name"]
+
     if not overwrite then
         if not storage_frame then return end
 
-        textfield = storage_frame["upgrade-planner-storage-buttons"]["upgrade-planner-storage-name"]
         name = textfield.text
         name = string.match(name, "^%s*(.-)%s*$")
 
@@ -569,7 +569,7 @@ local function gui_store(player, overwrite, index)
         }
     end
 
-    if not overwite then
+    if not overwrite then
         local storage_grid = storage_frame["upgrade-planner-storage-grid"]
         local index = count_keys(global["storage"][player.name]) + 1
         
