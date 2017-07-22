@@ -707,44 +707,6 @@ local function gui_remove(player, index)
     gui_display_message(storage_frame, true, "")
 end
 
-script.on_event(defines.events.on_gui_click, function(event) 
-
-    local element = event.element
-    local player = game.players[event.player_index]
-    
-    if element.name == "upgrade_blueprint" then
-      upgrade_blueprint(player)
-    end
-
-    if element.name == "upgrade-planner-config-button" then
-        gui_open_frame(player)
-    elseif element.name == "upgrade-planner-apply" then
-        gui_save_changes(player)
-    elseif element.name == "upgrade-planner-clear-all" then
-        gui_clear_all(player)
-    elseif element.name  == "upgrade-planner-storage-store" then
-        gui_store(player)
-    else
-
-        local op, index = string.match(element.name, "upgrade%-planner%-(%a+):(.*)")
-	--log( "elem:".. element.name.. " op:"..tostring(op).." index:"..tostring(index))
-        if op and index then
-            if op == "restore" then
-                gui_restore(player, index)
-                gui_save_changes(player)
-            elseif op == "replace" then
-                gui_store(player, true, index );
-            elseif op == "remove" then
-                gui_remove(player, index)
-            elseif op == "clear" then
-                gui_clear_rule(player, index )
-            end
-        end
-
-    end
-
-end)
-
 script.on_event(defines.events.on_gui_elem_changed, function(event)
 
   local element = event.element
@@ -1233,11 +1195,6 @@ script.on_configuration_changed(function(data)
 
 end)
 
-script.on_event(defines.events.on_player_joined_game, function(event)
-  local player = game.players[event.player_index] 
-  gui_init(player)
-end)
-
 local function upgrade_blueprint(player)
   local stack = player.cursor_stack
   if not stack.valid then 
@@ -1304,6 +1261,12 @@ local function upgrade_blueprint(player)
   player.print({"blueprint-upgrade-sucessful"})
 end
 
+script.on_event(defines.events.on_player_joined_game, function(event)
+  local player = game.players[event.player_index] 
+  gui_init(player)
+end)
+
+
 script.on_event(defines.events.on_player_selected_area, function(event)
   on_selected_area(event)
   remove_trees(event)
@@ -1312,6 +1275,44 @@ end)
 script.on_event(defines.events.on_player_alt_selected_area, function(event)
   on_alt_selected_area(event)
   bot_remove_trees(event)
+end)
+
+script.on_event(defines.events.on_gui_click, function(event) 
+
+    local element = event.element
+    local player = game.players[event.player_index]
+    
+    if element.name == "upgrade_blueprint" then
+      upgrade_blueprint(player)
+    end
+
+    if element.name == "upgrade-planner-config-button" then
+        gui_open_frame(player)
+    elseif element.name == "upgrade-planner-apply" then
+        gui_save_changes(player)
+    elseif element.name == "upgrade-planner-clear-all" then
+        gui_clear_all(player)
+    elseif element.name  == "upgrade-planner-storage-store" then
+        gui_store(player)
+    else
+
+        local op, index = string.match(element.name, "upgrade%-planner%-(%a+):(.*)")
+	--log( "elem:".. element.name.. " op:"..tostring(op).." index:"..tostring(index))
+        if op and index then
+            if op == "restore" then
+                gui_restore(player, index)
+                gui_save_changes(player)
+            elseif op == "replace" then
+                gui_store(player, true, index );
+            elseif op == "remove" then
+                gui_remove(player, index)
+            elseif op == "clear" then
+                gui_clear_rule(player, index )
+            end
+        end
+
+    end
+
 end)
 
 

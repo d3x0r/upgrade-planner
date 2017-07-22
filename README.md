@@ -34,6 +34,9 @@ as a module type, swapping no-module to some-module.  If you have any feedback p
 
 
 ## Changelog
+
+1.3.901 - Fix acutally using the planer after GUI updates; could wish LUA would warn aheaed of time funtions were undefined.
+
 1.3.9 - Fix no-module properties to have some bonus not 0 (fix compat with helmod; all 0 leave no module_effects in game).  Add replace button to overwrite previous config.
 
 1.3.8 - If new item is an error; restore previous item instead of clearing square.  (Item is different type, item already in list, makes the item the same)
