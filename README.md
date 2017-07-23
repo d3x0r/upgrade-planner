@@ -35,7 +35,7 @@ as a module type, swapping no-module to some-module.  If you have any feedback p
 
 ## Changelog
 
-1.3.902 - Fix compatibility with original upgrade-planner.  (rename internals to upgrade-planner2)
+1.3.902 - Fix compatibility with original upgrade-planner.  (rename internals to upgrade-planner2)  Update graphic resources.
 
 1.3.901 - Fix acutally using the planer after GUI updates; could wish LUA would warn aheaed of time funtions were undefined.
 
