@@ -3,7 +3,7 @@ data:extend({
 
   {
     type = "selection-tool",
-    name = "upgrade-builder",
+    name = "upgrade-builder2",
     icon = "__upgrade-planner2__/graphics/builder.png",
     stack_size = 1,
     subgroup = "tool",
@@ -32,25 +32,25 @@ data:extend({
   },
   {
     type = "recipe",
-    name = "upgrade-builder",
+    name = "upgrade-builder2",
     enabled = true,
     energy_required = 0.1,
     ingredients =
     {
     },
-    result = "upgrade-builder"
+    result = "upgrade-builder2"
   },
 })
 
 data:extend{
   {
     type = "custom-input",
-    name = "upgrade-planner",
+    name = "upgrade-planner2",
     key_sequence = "U",
   },
   {
     type = "custom-input",
-    name = "upgrade-planner-hide",
+    name = "upgrade-planner2-hide",
     key_sequence = "CONTROL + U",
   },
 }

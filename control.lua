@@ -75,7 +75,7 @@ local function add_storage_buttons( player,storage_frame )
     local storage_grid = storage_frame.add{
         type = "table",
         colspan = 4,
-        name = "upgrade-planner-storage-grid"
+        name = "upgrade-planner2-storage-grid"
     }
 
     if global["storage"][player.name] then
@@ -83,25 +83,25 @@ local function add_storage_buttons( player,storage_frame )
 	    storage_grid.add{
                 type = "label",
                 caption = key .. "        ",
-                name = "upgrade-planner-storage-entry:" .. key
+                name = "upgrade-planner2-storage-entry:" .. key
             }
             storage_grid.add{
                 type = "button",
-                caption = {"upgrade-planner-storage-restore"},
-                name = "upgrade-planner-restore:" .. key,
-                style = "upgrade-planner-small-button"
+                caption = {"upgrade-planner2-storage-restore"},
+                name = "upgrade-planner2-restore:" .. key,
+                style = "upgrade-planner2-small-button"
             }
             storage_grid.add{
                 type = "button",
-                caption = {"upgrade-planner-storage-remove"},
-                name = "upgrade-planner-remove:" .. key,
-                style = "upgrade-planner-small-button"
+                caption = {"upgrade-planner2-storage-remove"},
+                name = "upgrade-planner2-remove:" .. key,
+                style = "upgrade-planner2-small-button"
             }
 	    storage_grid.add{
 	        type = "button",
-	        caption = {"upgrade-planner-storage-replace"},
-	        name = "upgrade-planner-replace:".. key,
-	        style = "upgrade-planner-small-button"
+	        caption = {"upgrade-planner2-storage-replace"},
+	        name = "upgrade-planner2-replace:".. key,
+	        style = "upgrade-planner2-small-button"
 	    }
     
         end
@@ -112,26 +112,26 @@ local function gui_init(player)
     if player.gui.top["replacer-config-button"] then
         player.gui.top["replacer-config-button"].destroy() 
     end
-    if player.gui.top["upgrade-planner-config-button"] then
-      player.gui.top["upgrade-planner-config-button"].destroy()
+    if player.gui.top["upgrade-planner2-config-button"] then
+      player.gui.top["upgrade-planner2-config-button"].destroy()
     end
-    if player.gui.left["upgrade-planner-config-frame"] then
-      player.gui.left["upgrade-planner-config-frame"].destroy()
+    if player.gui.left["upgrade-planner2-config-frame"] then
+      player.gui.left["upgrade-planner2-config-frame"].destroy()
     end
     
-    if player.gui.left["upgrade-planner-storage-frame"] then
-      player.gui.left["upgrade-planner-storage-frame"].destroy()
+    if player.gui.left["upgrade-planner2-storage-frame"] then
+      player.gui.left["upgrade-planner2-storage-frame"].destroy()
     end
     
     local flow = mod_gui.get_button_flow(player)
-    if not flow["upgrade-planner-config-button"] then
+    if not flow["upgrade-planner2-config-button"] then
       local button = flow.add
       {
         type = "sprite-button",
-        name = "upgrade-planner-config-button",
+        name = "upgrade-planner2-config-button",
         style = mod_gui.button_style,
         sprite = "item/upgrade-builder",
-        tooltip = {"upgrade-planner-button-tooltip"}
+        tooltip = {"upgrade-planner2-button-tooltip"}
       }
       button.style.visible = true
     end
@@ -139,8 +139,8 @@ end
 
 local function gui_open_frame(player)
     local flow = mod_gui.get_frame_flow(player)
-    local frame = flow["upgrade-planner-config-frame"]
-    local storage_frame = flow["upgrade-planner-storage-frame"]
+    local frame = flow["upgrade-planner2-config-frame"]
+    local storage_frame = flow["upgrade-planner2-storage-frame"]
 
     if frame then
         frame.destroy()
@@ -187,14 +187,14 @@ local function gui_open_frame(player)
     gui = mod_gui.get_frame_flow(player)
     frame = gui.add{
         type = "frame",
-        caption = {"upgrade-planner-config-frame-title"},
-        name = "upgrade-planner-config-frame",
+        caption = {"upgrade-planner2-config-frame-title"},
+        name = "upgrade-planner2-config-frame",
         direction = "vertical"
     }
 
     local error_label = frame.add{ 
         type = "label",
-        name = "upgrade-planner-error-label"
+        name = "upgrade-planner2-error-label"
     }
 
     error_label.style.minimal_width = 200
@@ -202,39 +202,39 @@ local function gui_open_frame(player)
     local ruleset_grid = frame.add{
         type = "table",
         colspan = 6,
-        name = "upgrade-planner-ruleset-grid",
+        name = "upgrade-planner2-ruleset-grid",
         style = "slot_table_style"
     }
 
     ruleset_grid.add{
         type = "label",
-        name = "upgrade-planner-grid-header-1",
-        caption = {"upgrade-planner-config-header-1"}
+        name = "upgrade-planner2-grid-header-1",
+        caption = {"upgrade-planner2-config-header-1"}
     }
     ruleset_grid.add{
         type = "label",
-        name = "upgrade-planner-grid-header-2",
-        caption = {"upgrade-planner-config-header-2"}
+        name = "upgrade-planner2-grid-header-2",
+        caption = {"upgrade-planner2-config-header-2"}
     }
     ruleset_grid.add{
         type = "label",
-        name = "upgrade-planner-grid-header-3",
-        caption = {"upgrade-planner-config-clear", "    "}
+        name = "upgrade-planner2-grid-header-3",
+        caption = {"upgrade-planner2-config-clear", "    "}
     }
     ruleset_grid.add{
         type = "label",
-        name = "upgrade-planner-grid-header-4",
-        caption = {"upgrade-planner-config-header-1"}
+        name = "upgrade-planner2-grid-header-4",
+        caption = {"upgrade-planner2-config-header-1"}
     }
     ruleset_grid.add{
         type = "label",
-        name = "upgrade-planner-grid-header-5",
-        caption = {"upgrade-planner-config-header-2"}
+        name = "upgrade-planner2-grid-header-5",
+        caption = {"upgrade-planner2-config-header-2"}
     }
     ruleset_grid.add{
         type = "label",
-        name = "upgrade-planner-grid-header-6",
-        caption = {"upgrade-planner-config-clear", ""}
+        name = "upgrade-planner2-grid-header-6",
+        caption = {"upgrade-planner2-config-clear", ""}
     }
     local items = game.item_prototypes
     for i = 1, MAX_CONFIG_SIZE do
@@ -247,7 +247,7 @@ local function gui_open_frame(player)
         end
         local elem = ruleset_grid.add{ 
             type = "choose-elem-button",
-            name = "upgrade-planner-from-" .. i,
+            name = "upgrade-planner2-from-" .. i,
             style = "slot_button_style",
             --sprite = sprite,
             elem_type = "item",
@@ -263,7 +263,7 @@ local function gui_open_frame(player)
         end
         local elem = ruleset_grid.add{
             type = "choose-elem-button",
-            name = "upgrade-planner-to-" .. i,
+            name = "upgrade-planner2-to-" .. i,
             --style = "slot_button_style",
             --sprite = sprite,
             elem_type = "item",
@@ -272,29 +272,29 @@ local function gui_open_frame(player)
         elem.elem_value = to
         ruleset_grid.add{
             type = "sprite-button",
-            name = "upgrade-planner-clear-" .. i,
+            name = "upgrade-planner2-clear-" .. i,
             style = "red_slot_button_style",
             sprite = "utility/remove",
-            tooltip = {"upgrade-planner-config-clear", ""}
+            tooltip = {"upgrade-planner2-config-clear", ""}
         }
     end
 
     local button_grid = frame.add{
         type = "table",
         colspan = 2,
-        name = "upgrade-planner-button-grid"
+        name = "upgrade-planner2-button-grid"
     }
 
     button_grid.add{
         type = "button",
-        name = "upgrade-planner-apply",
-        caption = {"upgrade-planner-config-button-apply"},
+        name = "upgrade-planner2-apply",
+        caption = {"upgrade-planner2-config-button-apply"},
         style = mod_gui.button_style
     }
     button_grid.add{
         type = "button",
-        name = "upgrade-planner-clear-all",
-        caption = {"upgrade-planner-config-button-clear-all"},
+        name = "upgrade-planner2-clear-all",
+        caption = {"upgrade-planner2-config-button-clear-all"},
         style = mod_gui.button_style
     }
     
@@ -302,20 +302,20 @@ local function gui_open_frame(player)
         type = "sprite-button",
         name = "upgrade_blueprint",
         sprite = "item/blueprint",
-        tooltip = {"upgrade-planner-config-button-upgrade-blueprint"},
+        tooltip = {"upgrade-planner2-config-button-upgrade-blueprint"},
         style = mod_gui.button_style
     }
 
     storage_frame = gui.add{
         type = "frame",
-        name = "upgrade-planner-storage-frame",
-        caption = {"upgrade-planner-storage-frame-title"},
+        name = "upgrade-planner2-storage-frame",
+        caption = {"upgrade-planner2-storage-frame-title"},
         direction = "vertical"
     }
 
     local storage_frame_error_label = storage_frame.add{
         type = "label",
-        name = "upgrade-planner-storage-error-label"
+        name = "upgrade-planner2-storage-error-label"
     }
 
     storage_frame_error_label.style.minimal_width = 200
@@ -323,26 +323,26 @@ local function gui_open_frame(player)
     local storage_frame_buttons = storage_frame.add{
         type = "table",
         colspan = 3,
-        name = "upgrade-planner-storage-buttons"
+        name = "upgrade-planner2-storage-buttons"
     }
 
     storage_frame_buttons.add{
         type = "label",
-        caption = {"upgrade-planner-storage-name-label"},
-        name = "upgrade-planner-storage-name-label"
+        caption = {"upgrade-planner2-storage-name-label"},
+        name = "upgrade-planner2-storage-name-label"
     }
 
     storage_frame_buttons.add{
         type = "textfield",
         text = "",
-        name = "upgrade-planner-storage-name"
+        name = "upgrade-planner2-storage-name"
     }
 
     storage_frame_buttons.add{
         type = "button",
-        caption = {"upgrade-planner-storage-store"},
-        name = "upgrade-planner-storage-store",
-        style = "upgrade-planner-small-button"
+        caption = {"upgrade-planner2-storage-store"},
+        name = "upgrade-planner2-storage-store",
+        style = "upgrade-planner2-small-button"
     }
 
     add_storage_buttons( player,storage_frame );
@@ -395,19 +395,19 @@ end
 local function gui_clear_all(player)
 
     local i = 0
-    local frame = mod_gui.get_frame_flow(player)["upgrade-planner-config-frame"]
+    local frame = mod_gui.get_frame_flow(player)["upgrade-planner2-config-frame"]
 
     if not frame then return end
 
-    local ruleset_grid = frame["upgrade-planner-ruleset-grid"]
+    local ruleset_grid = frame["upgrade-planner2-ruleset-grid"]
 
     for i = 1, MAX_CONFIG_SIZE do
 
         global["config-tmp"][player.name][i] = { from = "", to = "" }
-        ruleset_grid["upgrade-planner-from-" .. i].elem_value = nil
-        ruleset_grid["upgrade-planner-from-" .. i].tooltip = ''
-        ruleset_grid["upgrade-planner-to-" .. i].elem_value = nil
-        ruleset_grid["upgrade-planner-to-" .. i].tooltip = ''
+        ruleset_grid["upgrade-planner2-from-" .. i].elem_value = nil
+        ruleset_grid["upgrade-planner2-from-" .. i].tooltip = ''
+        ruleset_grid["upgrade-planner2-to-" .. i].elem_value = nil
+        ruleset_grid["upgrade-planner2-to-" .. i].tooltip = ''
         
     end
 
@@ -415,7 +415,7 @@ end
 
 local function gui_display_message(frame, storage, message)
 
-    local label_name = "upgrade-planner-"
+    local label_name = "upgrade-planner2-"
     if storage then label_name = label_name .. "storage-" end
     label_name = label_name .. "error-label"
 
@@ -449,8 +449,8 @@ end
 
 local function gui_set_rule(player, type, index, element )
     local name = element.elem_value
-    local frame = mod_gui.get_frame_flow(player)["upgrade-planner-config-frame"]
-    local ruleset_grid = frame["upgrade-planner-ruleset-grid"]
+    local frame = mod_gui.get_frame_flow(player)["upgrade-planner2-config-frame"]
+    local ruleset_grid = frame["upgrade-planner2-ruleset-grid"]
     if not frame or not global["config-tmp"][player.name] then return end
     local is_module = false;
     local is_rail = false;
@@ -458,7 +458,7 @@ local function gui_set_rule(player, type, index, element )
     local straight_rail = nil;
 
     if not name then
-      ruleset_grid["upgrade-planner-" .. type .. "-" .. index].tooltip = ""
+      ruleset_grid["upgrade-planner2-" .. type .. "-" .. index].tooltip = ""
       global["config-tmp"][player.name][index][type] = ""
       return
     end
@@ -482,7 +482,7 @@ local function gui_set_rule(player, type, index, element )
 
             for i = 1, #global["config-tmp"][player.name] do
                 if index ~= i and global["config-tmp"][player.name][i].from == name then
-                    gui_display_message(frame, false, "upgrade-planner-item-already-set")
+                    gui_display_message(frame, false, "upgrade-planner2-item-already-set")
                     element.elem_value = global["config-tmp"][player.name][index][type]
                     return
                 end
@@ -495,13 +495,13 @@ local function gui_set_rule(player, type, index, element )
         if related ~= "" then
 
             if related == name then
-                gui_display_message(frame, false, "upgrade-planner-item-is-same")
+                gui_display_message(frame, false, "upgrade-planner2-item-is-same")
                 element.elem_value = global["config-tmp"][player.name][index][type]
                 return
             end
 
             if get_type(name) ~= get_type(related) and (not is_exception(get_type(name), get_type(related))) then
-                gui_display_message(frame, false, "upgrade-planner-item-not-same-type")
+                gui_display_message(frame, false, "upgrade-planner2-item-not-same-type")
                 if global["config-tmp"][player.name][index][type] ~= '' then
                     element.elem_value = global["config-tmp"][player.name][index][type]
                 else
@@ -522,25 +522,25 @@ local function gui_set_rule(player, type, index, element )
     global["config-tmp"][player.name][index][type.."_straight_rail"] = straight_rail
 
     
-    --ruleset_grid["upgrade-planner-" .. type .. "-" .. index].sprite = "item/"..game.item_prototypes[stack.name].name
-    ruleset_grid["upgrade-planner-" .. type .. "-" .. index].tooltip = game.item_prototypes[name].localised_name
+    --ruleset_grid["upgrade-planner2-" .. type .. "-" .. index].sprite = "item/"..game.item_prototypes[stack.name].name
+    ruleset_grid["upgrade-planner2-" .. type .. "-" .. index].tooltip = game.item_prototypes[name].localised_name
 
 end
 
 local function gui_clear_rule(player, index)
 
-    local frame = mod_gui.get_frame_flow(player)["upgrade-planner-config-frame"]
+    local frame = mod_gui.get_frame_flow(player)["upgrade-planner2-config-frame"]
     if not frame or not global["config-tmp"][player.name] then return end
 
     gui_display_message(frame, false, "")
 
-    local ruleset_grid = frame["upgrade-planner-ruleset-grid"]
+    local ruleset_grid = frame["upgrade-planner2-ruleset-grid"]
 
     global["config-tmp"][player.name][index] = { from = "", to = "" }
-    ruleset_grid["upgrade-planner-from-" .. index].elem_value = nil
-    ruleset_grid["upgrade-planner-from-" .. index].tooltip = ""
-    ruleset_grid["upgrade-planner-to-" .. index].elem_value = nil
-    ruleset_grid["upgrade-planner-to-" .. index].tooltip = ""
+    ruleset_grid["upgrade-planner2-from-" .. index].elem_value = nil
+    ruleset_grid["upgrade-planner2-from-" .. index].tooltip = ""
+    ruleset_grid["upgrade-planner2-to-" .. index].elem_value = nil
+    ruleset_grid["upgrade-planner2-to-" .. index].tooltip = ""
 
 end
 
@@ -548,8 +548,8 @@ local function gui_store(player, overwrite, index)
 
     global["storage"][player.name] = global["storage"][player.name] or {}
     local name
-    local storage_frame = mod_gui.get_frame_flow(player)["upgrade-planner-storage-frame"]
-    local textfield = storage_frame["upgrade-planner-storage-buttons"]["upgrade-planner-storage-name"]
+    local storage_frame = mod_gui.get_frame_flow(player)["upgrade-planner2-storage-frame"]
+    local textfield = storage_frame["upgrade-planner2-storage-buttons"]["upgrade-planner2-storage-name"]
 
     if not overwrite then
         if not storage_frame then return end
@@ -558,16 +558,16 @@ local function gui_store(player, overwrite, index)
         name = string.match(name, "^%s*(.-)%s*$")
 
         if not name or name == "" then
-            gui_display_message(storage_frame, true, "upgrade-planner-storage-name-not-set")
+            gui_display_message(storage_frame, true, "upgrade-planner2-storage-name-not-set")
             return
         end
 
         if not overwrite and global["storage"][player.name][name] then
-            gui_display_message(storage_frame, true, "upgrade-planner-storage-name-in-use")
+            gui_display_message(storage_frame, true, "upgrade-planner2-storage-name-in-use")
             return
         end
         if count_keys(global["storage"][player.name]) >= MAX_STORAGE_SIZE  then
-            gui_display_message(storage_frame, true, "upgrade-planner-storage-too-long")
+            gui_display_message(storage_frame, true, "upgrade-planner2-storage-too-long")
             return
         end
     else
@@ -591,35 +591,35 @@ local function gui_store(player, overwrite, index)
     end
 
     if not overwrite then
-        local storage_grid = storage_frame["upgrade-planner-storage-grid"]
+        local storage_grid = storage_frame["upgrade-planner2-storage-grid"]
         --local index = count_keys(global["storage"][player.name]) + 1
         
         storage_grid.add{
             type = "label",
             caption = name .. "        ",
-            name = "upgrade-planner-storage-entry:" .. name
+            name = "upgrade-planner2-storage-entry:" .. name
         }
 
 	--log( "save_names:"..index..":"..save_names[index] );
         
         storage_grid.add{
             type = "button",
-            caption = {"upgrade-planner-storage-restore"},
-            name = "upgrade-planner-restore:" ..name,
-            style = "upgrade-planner-small-button"
+            caption = {"upgrade-planner2-storage-restore"},
+            name = "upgrade-planner2-restore:" ..name,
+            style = "upgrade-planner2-small-button"
         }
         
         storage_grid.add{
             type = "button",
-            caption = {"upgrade-planner-storage-remove"},
-            name = "upgrade-planner-remove:" .. name,
-            style = "upgrade-planner-small-button"
+            caption = {"upgrade-planner2-storage-remove"},
+            name = "upgrade-planner2-remove:" .. name,
+            style = "upgrade-planner2-small-button"
         }
         storage_grid.add{
             type = "button",
-            caption = {"upgrade-planner-storage-replace"},
-            name = "upgrade-planner-replace:"..name,
-            style = "upgrade-planner-small-button"
+            caption = {"upgrade-planner2-storage-replace"},
+            name = "upgrade-planner2-replace:"..name,
+            style = "upgrade-planner2-small-button"
         }
     end
     gui_display_message(storage_frame, true, "")
@@ -629,12 +629,12 @@ end
 
 local function gui_restore(player, index)
 
-    local frame = mod_gui.get_frame_flow(player)["upgrade-planner-config-frame"]
-    local storage_frame = mod_gui.get_frame_flow(player)["upgrade-planner-storage-frame"]
+    local frame = mod_gui.get_frame_flow(player)["upgrade-planner2-config-frame"]
+    local storage_frame = mod_gui.get_frame_flow(player)["upgrade-planner2-storage-frame"]
     if not frame or not storage_frame then return end
 
-    local storage_grid = storage_frame["upgrade-planner-storage-grid"]
-   -- local storage_entry = storage_grid["upgrade-planner-storage-entry:" .. index]
+    local storage_grid = storage_frame["upgrade-planner2-storage-grid"]
+   -- local storage_entry = storage_grid["upgrade-planner2-storage-entry:" .. index]
    -- if not storage_entry then return end
 
     local name = index;--string.match(storage_entry.caption, "^%s*(.-)%s*$")
@@ -643,7 +643,7 @@ local function gui_restore(player, index)
     global["config-tmp"][player.name] = {}
 
     local i = 0
-    local ruleset_grid = frame["upgrade-planner-ruleset-grid"]
+    local ruleset_grid = frame["upgrade-planner2-ruleset-grid"]
     local items = game.item_prototypes
     for i = 1, MAX_CONFIG_SIZE do
         if i > #global["storage"][player.name][name] then
@@ -667,15 +667,15 @@ local function gui_restore(player, index)
         local tooltip = '';
         if( name ) then tooltip = items[name].localised_name end
         --if name then sprite = "item/"..items[name].name end
-        ruleset_grid["upgrade-planner-from-" .. i].elem_value = name
-        ruleset_grid["upgrade-planner-from-" .. i].tooltip = tooltip
+        ruleset_grid["upgrade-planner2-from-" .. i].elem_value = name
+        ruleset_grid["upgrade-planner2-from-" .. i].tooltip = tooltip
         --local sprite = ""
         local name = get_config_item(player, i, "to")
         local tooltip = '';
         if( name ) then tooltip = items[name].localised_name end
         --if name then sprite = "item/"..items[name].name end
-        ruleset_grid["upgrade-planner-to-" .. i].elem_value = name
-        ruleset_grid["upgrade-planner-to-" .. i].tooltip = tooltip
+        ruleset_grid["upgrade-planner2-to-" .. i].elem_value = name
+        ruleset_grid["upgrade-planner2-to-" .. i].tooltip = tooltip
     end
 
     gui_display_message(storage_frame, true, "")
@@ -686,14 +686,14 @@ local function gui_remove(player, index)
 
     if not global["storage"][player.name] then return end
 
-    local storage_frame = mod_gui.get_frame_flow(player)["upgrade-planner-storage-frame"]
+    local storage_frame = mod_gui.get_frame_flow(player)["upgrade-planner2-storage-frame"]
     if not storage_frame then return end
 
-    local storage_grid = storage_frame["upgrade-planner-storage-grid"]
-    local label = storage_grid["upgrade-planner-storage-entry:" .. index]
-    local btn1 = storage_grid["upgrade-planner-restore:" .. index]
-    local btn2 = storage_grid["upgrade-planner-remove:" .. index]
-    local btn3 = storage_grid["upgrade-planner-replace:" .. index]
+    local storage_grid = storage_frame["upgrade-planner2-storage-grid"]
+    local label = storage_grid["upgrade-planner2-storage-entry:" .. index]
+    local btn1 = storage_grid["upgrade-planner2-restore:" .. index]
+    local btn2 = storage_grid["upgrade-planner2-remove:" .. index]
+    local btn3 = storage_grid["upgrade-planner2-replace:" .. index]
 
 --    if not label or not btn1 or not btn2 then return end
     --if not label then return end
@@ -711,7 +711,7 @@ script.on_event(defines.events.on_gui_elem_changed, function(event)
 
   local element = event.element
   local player = game.players[event.player_index]
-  local type, index = string.match(element.name, "upgrade%-planner%-(%a+)%-(%d+)")
+  local type, index = string.match(element.name, "upgrade%-planner2%-(%a+)%-(%d+)")
   if type and index then
     if type == "from" or type == "to" then
       gui_set_rule(player, type, tonumber(index), element)
@@ -1187,7 +1187,7 @@ script.on_configuration_changed(function(data)
     return
   end
   
-  if data.mod_changes["upgrade-planner"] then    
+  if data.mod_changes["upgrade-planner2"] then    
     for k, player in pairs (game.players) do
       gui_init(player)
     end 
@@ -1286,17 +1286,17 @@ script.on_event(defines.events.on_gui_click, function(event)
       upgrade_blueprint(player)
     end
 
-    if element.name == "upgrade-planner-config-button" then
+    if element.name == "upgrade-planner2-config-button" then
         gui_open_frame(player)
-    elseif element.name == "upgrade-planner-apply" then
+    elseif element.name == "upgrade-planner2-apply" then
         gui_save_changes(player)
-    elseif element.name == "upgrade-planner-clear-all" then
+    elseif element.name == "upgrade-planner2-clear-all" then
         gui_clear_all(player)
-    elseif element.name  == "upgrade-planner-storage-store" then
+    elseif element.name  == "upgrade-planner2-storage-store" then
         gui_store(player)
     else
 
-        local op, index = string.match(element.name, "upgrade%-planner%-(%a+):(.*)")
+        local op, index = string.match(element.name, "upgrade%-planner2%-(%a+):(.*)")
 	--log( "elem:".. element.name.. " op:"..tostring(op).." index:"..tostring(index))
         if op and index then
             if op == "restore" then
@@ -1317,16 +1317,16 @@ end)
 
 
 
-script.on_event("upgrade-planner", function(event)
+script.on_event("upgrade-planner2", function(event)
   local player = game.players[event.player_index]
   gui_open_frame(player)
 end)
-script.on_event("upgrade-planner-hide", function(event)
+script.on_event("upgrade-planner2-hide", function(event)
   local player = game.players[event.player_index]
   local frame_flow = mod_gui.get_frame_flow(player)
   local button_flow = mod_gui.get_button_flow(player)
-  if button_flow["upgrade-planner-config-button"] then
-    button_flow["upgrade-planner-config-button"].style.visible = not button_flow["upgrade-planner-config-button"].style.visible
+  if button_flow["upgrade-planner2-config-button"] then
+    button_flow["upgrade-planner2-config-button"].style.visible = not button_flow["upgrade-planner2-config-button"].style.visible
   end
 end)
 
