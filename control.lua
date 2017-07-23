@@ -109,8 +109,8 @@ local function add_storage_buttons( player,storage_frame )
 end
 
 local function gui_init(player)
-    if player.gui.top["replacer-config-button"] then
-        player.gui.top["replacer-config-button"].destroy() 
+    if player.gui.top["replacer2-config-button"] then
+        player.gui.top["replacer2-config-button"].destroy() 
     end
     if player.gui.top["upgrade-planner2-config-button"] then
       player.gui.top["upgrade-planner2-config-button"].destroy()
@@ -130,7 +130,7 @@ local function gui_init(player)
         type = "sprite-button",
         name = "upgrade-planner2-config-button",
         style = mod_gui.button_style,
-        sprite = "item/upgrade-builder",
+        sprite = "item/upgrade-builder2",
         tooltip = {"upgrade-planner2-button-tooltip"}
       }
       button.style.visible = true
