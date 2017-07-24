@@ -6,7 +6,7 @@ local in_range_check_is_annoying = true
 local available_storage_entries = {}
 
 -- these items are checked as 'to' and disallow being set.
-local banned_targets = { "landfill" }
+local banned_targets = { } --"landfill" }
 
 local function glob_init()
     global["entity-recipes"] = global["entity-recipes"] or {}
@@ -1170,7 +1170,7 @@ local function on_selected_area(event)
                     --script.raise_event(defines.events.on_player_mined_item,{player_index = player.index, item_stack = {name = orig_inv_name, count = item_count}})
                   else
                     global.temporary_ignore[entry.from] = true
-                    surface.create_entity{name = "flying-text", position = {belt.position.x-1.3,belt.position.y-0.5}, text = {"insufficient-items"}, color = {r=1,g=0.6,b=0.6}}
+                    surface.create_entity{name = "flying-text", position = {tile.position.x-1.3,tile.position.y-0.5}, text = {"insufficient-items"}, color = {r=1,g=0.6,b=0.6}}
                   end
       
                end

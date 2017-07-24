@@ -31,11 +31,16 @@ load the configuration into the current set of upgrades and make it active.  Cli
 Works; One note if you replace modules to invalid modules, they will be subtracted from your inventory and not go into the machine.
 Productivity modules can only go on things that are 'intermediate products' and not final products. 
 
+## Terraform the world!
+As a byproduct of allowing grass, you can put down brick in a desert, set a plan to upgrade brick to landfill and use landfill to fill a desert.
+
 ## Outstanding Issues
 
 Replace rails with shift-click causes tracks to skew.  Rail offsets need to be applied during bot-upgrade mode.
 
 ## Changelog
+1.3.907 - revert prohibition; fix flying text on tile out of items.
+
 1.3.906 - prohibit setting grass as a target tile type.  Fix a couple icon reversion during error crashes.
 
 1.3.905 - fix crash setting same item on a blank row; item in first colum same type on blank caused error.
