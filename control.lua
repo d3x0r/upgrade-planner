@@ -761,6 +761,19 @@ local function player_module_upgrade(player,belt,from,to)
   end
 end
 
+
+
+local zero_delta = { x = 0,   y = 0, origx = 0, origy = 0, posx = 0, posy =  0 }
+local curved_track_deltas = { { x = -3,   y = -3, origx = 1, origy =-1, posx = -2, posy =  0 },
+                              { x = 1,    y = -3, origx =-1, origy =-1, posx =  0, posy =  0 },
+                              { x = 0.5,  y = -3, origx = 1, origy = 1, posx = -2, posy = -2 },
+                              { x = 1,    y = 1,  origx = 1, origy =-1, posx = -2, posy =  0 },
+                              { x = 1,    y = 1,  origx =-1, origy = 1, posx =  0, posy = -2 },
+                              { x = -3,   y = 1,  origx = 1, origy = 1, posx = -2, posy = -2 },
+                              { x = -2.5, y = 1,  origx =-1, origy =-1, posx =  0, posy =  0 },
+                              { x = -2.5, y = -3, origx =-1, origy = 1, posx =  0, posy = -2 } };
+
+
 local function player_upgrade(player,orig_inv_name,belt,inv_name,upgrade,bool,is_curved_rail)
   local item_count = 1;
   if not belt then return end
@@ -771,71 +784,18 @@ local function player_upgrade(player,orig_inv_name,belt,inv_name,upgrade,bool,is
     local d = belt.direction
     local f = belt.force
     local p = belt.position
-    local inserter_pickup = nil;
-    local inserter_drop = nil;
-    --local inserter_drop_target = belt.drop_target;
-    --local inserter_pickup_target = belt.pickup_target;
+    local inserter_pickup = nil
+    local inserter_drop = nil
+    local pdel = zero_delta
 
-
-    local pdel = { x=0,y=0, origx=0,origy=0 }
-    if belt.type == 'straight-rail' then
-      if d == 1 then
-      end
-    elseif belt.type == 'curved-rail' then
+    if is_curved_rail then
       item_count = 4;
-      if d == 1  then -- up to up-right ( down-left to down)  1.7,2.3
-        pdel.x = 1;
-        pdel.y = -3;
-        pdel.origx =-1;
-        pdel.origy =-1;
-
-      elseif d == 6  then -- up-right to right ( left to down-left)  2.3,1.7
-        pdel.x = -2.5;
-        pdel.y = 1;
-        pdel.origx =-1;
-        pdel.origy =-1;
-      elseif d == 3  then -- right to down-right ( up-left to left) 2.3,1.7
-        pdel.x = 1;
-        pdel.y = 1;
-        pdel.origx =1;
-        pdel.origy =-1;
-      elseif d == 0  then -- down-right to down (up to up-left)  1.7,2.3
-        pdel.x = -3;
-        pdel.y = -3;
-        pdel.origx =1;
-        pdel.origy =-1;
-      elseif d == 5 then   -- down to down-left (up-right to up) 1.7,2.3
-        pdel.x = -3;
-        pdel.y = 1;
-        pdel.origx =1;
-        pdel.origy =1;
-      elseif d == 2 then   -- down-left to left (right to up-right)  2.3,1.7
-        pdel.x = 0.5;
-        pdel.y = -3;
-        pdel.origx =1;
-        pdel.origy =1;
-      elseif d == 7 then   -- left to up-left (down-right to right) 2.3,1.6
-        pdel.x = -2.5;
-        pdel.y = -3;
-        pdel.origx =-1;
-        pdel.origy =1;
-      elseif d == 4 then   -- up-left to up (down to down-right)  1.7,2.3; 
-        pdel.x = 1;
-        pdel.y = 1;
-        pdel.origx =-1;
-        pdel.origy =1;
-      end
-
-      if d == 3 or d == 0  then
-        p = { x=p.x-2, y = p.y };
-      elseif d == 7 or d == 4 then
-        p = { x=p.x, y = p.y-2 };
-      elseif d == 5 or d == 2 then
-        p = { x=p.x-2, y = p.y-2 };
-      end
+      pdel = curved_track_deltas[d+1]
+      p = { x=p.x + pdel.posx, y = p.y + pdel.posy };
     end
+
     if player.can_reach_entity(belt) or in_range_check_is_annoying then
-      local new_item
+      local new_item             	
       script.raise_event(defines.events.on_preplayer_mined_item,{player_index = player.index, entity = belt})
       if upgrade ~="deconstruction-planner" then --Goddamn legacy features
         if belt.type == "underground-belt" then 
@@ -969,13 +929,10 @@ local function player_upgrade(player,orig_inv_name,belt,inv_name,upgrade,bool,is
           end
           player.cursor_stack.set_stack{name = "upgrade-builder2", count = 1}      
         else 
-          --game.write_file( "planner.log", "Normal Replaceable.\n", true, 1 );
           if( new_item.type == "inserter" ) then
              new_item.pickup_position = inserter_pickup;
              new_item.drop_position = inserter_drop;
-             --game.write_file( "planner.log", "Normal Replaceable:"..tostring(new_item.drop_target)..":"..tostring(inserver_drop_target).."  "..tostring(new_item.pickup_target)..":"..tostring(inserver_pickup_target).."\n", true, 1 );
           end
-
           player.remove_item{name = inv_name, count = item_count}
           player.insert{name = orig_inv_name, count = item_count}
           script.raise_event(defines.events.on_player_mined_item,{player_index = player.index, item_stack = {name = orig_inv_name, count = item_count}})
@@ -1072,38 +1029,71 @@ local function bot_upgrade(player,belt,upgrade,bool)
 
 end
 
+local function bot_upgrade_tile(player,tile,upgrade)
+  local surface = player.surface
+  local p = belt.position
+  local d = belt.direction
+  local f = belt.force
+  local p = belt.position
+  local a = {{p.x-0.1,p.y-0.1},{p.x+0.1,p.y+0.1}}
+  
+  player.cursor_stack.set_stack{name = "blueprint", count = 1}
+  player.cursor_stack.create_blueprint{surface = surface, force = belt.force,area = a}
+  local old_blueprint = player.cursor_stack.get_blueprint_tiles()
+  old_blueprint[1].name = upgrade
+  player.cursor_stack.set_stack{name = "blueprint", count = 1}
+  player.cursor_stack.set_blueprint_tiles(old_blueprint)
+  belt.order_deconstruction(f)
+  player.cursor_stack.build_blueprint{surface = surface, force = f, position = p}
+  player.cursor_stack.set_stack{name = "upgrade-builder2", count = 1}
+
+end
+
+
 function on_alt_selected_area(event)
 --this is a lot simpler... but less cool
   if event.item == "upgrade-builder2" then
     local player = game.players[event.player_index]
     local config = global["config"][player.name]
-    if config ~= nil then
+    if config then
       local surface = player.surface
+
+      if event.tiles then
+        local new_tiles = {};
+        for _, tile in pairs( event.tiles ) do 
+          local proto = game.tile_prototypes[tile.name];
+          local placed_by_list = proto.items_to_place_this;
+          for __, entry in pairs( config ) do
+            if entry and entry.from then
+              for ___,placed_by in pairs(placed_by_list) do
+                 if placed_by.name == entry.from then
+                    bot_upgrade_tile( player, tile, game.item_prototypes[entry.to].place_as_tile_result.result.name )
+                 end
+              end
+            end
+          end    
+        end
+      end
+
       for k, belt in pairs (event.entities) do
         if belt.valid then
-          local index = 0
           local upgrade_to = nil;
           for i = 1, #config do
             if config[i].is_rail then
               if config[i].from_straight_rail == belt.name then
-                index = i
                 upgrade_to = config[i].to_straight_rail;
                 break
               elseif config[i].from_curved_rail == belt.name then
-                index = i
                 upgrade_to = config[i].to_curved_rail;
                 break
               end
             elseif config[i].from == belt.name then
-                index = i
                 upgrade_to = config[i].to;
                 break
             end
           end
-          if index > 0 then
-            if upgrade_to ~= nil then
-              bot_upgrade(player,belt,upgrade_to,true)
-            end
+          if upgrade_to then
+            bot_upgrade(player,belt,upgrade_to,true)
           end
         end
       end
@@ -1121,13 +1111,57 @@ local function on_selected_area(event)
   
   local surface = player.surface
   global.temporary_ignore = {}
+  if event.tiles then
+    local new_tiles = {};
+    for _, tile in pairs( event.tiles ) do 
+      local proto = game.tile_prototypes[tile.name];
+      local placed_by_list = proto.items_to_place_this;
+      for __, entry in pairs( config ) do
+        if entry and entry.from then
+          if not global.temporary_ignore[entry.from] then 
+            for ___,placed_by in pairs(placed_by_list) do
+               if placed_by.name == entry.from then
+                  
+                  if player.get_item_count(entry.from) > 0 or player.cheat_mode then 
+                  -- can't mine tiles?
+                  --   script.raise_event(defines.events.on_preplayer_mined_item,{player_index = player.index, tile = tile})
+                    new_tiles[#new_tiles+1] = { name = game.item_prototypes[entry.to].place_as_tile_result.result.name
+                                              , position = tile.position };
+                    player.remove_item{name = entry.to, count = 1}
+                    player.insert{name = entry.from, count = 1}
+                    --script.raise_event(defines.events.on_player_mined_item,{player_index = player.index, item_stack = {name = orig_inv_name, count = item_count}})
+                  else
+                    global.temporary_ignore[entry.from] = true
+                    surface.create_entity{name = "flying-text", position = {belt.position.x-1.3,belt.position.y-0.5}, text = {"insufficient-items"}, color = {r=1,g=0.6,b=0.6}}
+                  end
+      
+               end
+            end
+          end
+        end
+      end    
+    end
+    if #new_tiles > 0 then
+      surface.set_tiles( new_tiles );
+      local positions = {};
+      for _, tile in pairs(new_tiles) do
+        positions[#positions+1] = tile.position;
+      end
+      log_keys( positions )
+      script.raise_event(defines.events.on_player_mined_tile,{player_index = player.index, surface_index=surface.index, positions=positions})
+      script.raise_event(defines.events.on_player_built_tile,{player_index = player.index, surface_index=surface.index, positions=positions})
+    end
+  end
+
   for k, belt in pairs (event.entities) do --Get the items that are set to be upgraded
     if belt.valid then
       local upgrade = nil;
       local upgrade_to = nil;
       local is_curved_rail = false;
       for i = 1, #config do
+        -- insufficient items already, check ignore
         if global.temporary_ignore[config[i].from] then break end
+
         if config[i].is_rail then
           if config[i].from_curved_rail == belt.name then
               upgrade = config[i];
@@ -1274,17 +1308,17 @@ local function upgrade_blueprint(player)
   -- End Update Blueprint Entities
 
   -- update Tiles
-  entities = stack.get_blueprint_tiles()
-  if entities then     
+  local tiles = stack.get_blueprint_tiles()
+  if tiles then     
     updated = false;
-    for _,entity in pairs(entities) do
-      local proto = game.tile_prototypes[entity.name];
+    for _,tile in pairs(tiles) do
+      local proto = game.tile_prototypes[tile.name];
       local placed_by_list = proto.items_to_place_this ;
       for __, entry in pairs (config) do
         if entry and entry.from then
           for ___,placed_by in pairs(placed_by_list) do
              if placed_by.name == entry.from then
-                entity.name = game.item_prototypes[entry.to].place_as_tile_result.result.name;
+                tile.name = game.item_prototypes[entry.to].place_as_tile_result.result.name;
                 updated = true;
              end
           end
