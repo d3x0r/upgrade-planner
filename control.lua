@@ -505,8 +505,12 @@ local function gui_set_rule(player, type, index, element )
 
             if related == name then
                 gui_display_message(frame, false, "upgrade-planner2-item-is-same")
-		log( "Restore to:".. tostring( global["config-tmp"][player.name][index][type] ) );
-                element.elem_value = global["config-tmp"][player.name][index][type]
+                --log( "Restore to:".. tostring( global["config-tmp"][player.name][index][type] ) );
+                if global["config-tmp"][player.name][index][type] then
+                    element.elem_value = global["config-tmp"][player.name][index][type]
+		else
+                    global["config-tmp"][player.name][index][type] = nil
+                end
                 return
             end
 
@@ -1161,7 +1165,7 @@ local function on_selected_area(event)
       for _, tile in pairs(new_tiles) do
         positions[#positions+1] = tile.position;
       end
-      log_keys( positions )
+      --log_keys( positions )
       script.raise_event(defines.events.on_player_mined_tile,{player_index = player.index, surface_index=surface.index, positions=positions})
       script.raise_event(defines.events.on_player_built_tile,{player_index = player.index, surface_index=surface.index, positions=positions})
     end
@@ -1278,7 +1282,7 @@ local function upgrade_blueprint(player)
       local modules_changed = false;
       for __, entry in pairs (config) do
         if entry and entry.from then
-            log( "entry:"..entry.from .. " entity:".. entity.name );
+            --log( "entry:"..entry.from .. " entity:".. entity.name );
   
           if entry.is_module then
             --local m_inv = entity.;
