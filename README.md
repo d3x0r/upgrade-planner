@@ -28,12 +28,15 @@ load the configuration into the current set of upgrades and make it active.  Cli
 
 ## Module upgrades
 
-Work in progress; right now, it can easily, for example, replace Speed-1 to Speed-2 modules; it can even change module types 
-(possibly breaking rules like productivity can only be placed on intermediate products).  Have been ability to configure each slot
-as a module type, swapping no-module to some-module.  If you have any feedback please leave a message in the forum.
+Works; One note if you replace modules to invalid modules, they will be subtracted from your inventory and not go into the machine.
+Productivity modules can only go on things that are 'intermediate products' and not final products. 
 
+## Outstanding Issues
+
+Replace rails with shift-click causes tracks to skew.  Rail offsets need to be applied during bot-upgrade mode.
 
 ## Changelog
+1.3.903-904 - Add ability to upgrade tiles; in blue prints, on the ground(player), and by bots (shift-click).
 
 1.3.902 - Fix compatibility with original upgrade-planner.  (rename internals to upgrade-planner2)  Update graphic resources.
 
