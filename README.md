@@ -36,6 +36,8 @@ Productivity modules can only go on things that are 'intermediate products' and 
 Replace rails with shift-click causes tracks to skew.  Rail offsets need to be applied during bot-upgrade mode.
 
 ## Changelog
+1.3.906 - prohibit setting grass as a target tile type.  Fix a couple icon reversion during error crashes.
+
 1.3.905 - fix crash setting same item on a blank row; item in first colum same type on blank caused error.
 
 1.3.903-904 - Add ability to upgrade tiles; in blue prints, on the ground(player), and by bots (shift-click).
