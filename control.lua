@@ -471,7 +471,7 @@ local function gui_set_rule(player, type, index, element )
 
     if type == "to" then 
        for _,to_type in pairs(banned_targets) do
-          if to_type == type then
+          if element.elem_value == to_type then
             if global["config-tmp"][player.name][index][type] ~= '' then
                element.elem_value = global["config-tmp"][player.name][index][type]
             else
