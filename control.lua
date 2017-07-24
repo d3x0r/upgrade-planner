@@ -37,6 +37,7 @@ local function count_keys(hashmap)
 end
 
 local function _log_keys(prefix,object)
+   if not object then log( "invalid object" ); return; end
 	for _, __ in pairs(object) do
 		log( prefix.._.."="..tostring(__) );
 		--if( type(__)=="string" or type(__)=="number" or type(__)=="function" or type(__)=="boolean" or type(__)=="nil"or type(__)=="thread") then
@@ -504,6 +505,7 @@ local function gui_set_rule(player, type, index, element )
 
             if related == name then
                 gui_display_message(frame, false, "upgrade-planner2-item-is-same")
+		log( "Restore to:".. tostring( global["config-tmp"][player.name][index][type] ) );
                 element.elem_value = global["config-tmp"][player.name][index][type]
                 return
             end
@@ -1004,7 +1006,6 @@ local function bot_upgrade(player,belt,upgrade,bool)
   local p = belt.position
   local d = belt.direction
   local f = belt.force
-  local p = belt.position
   local a = {{p.x-0.5,p.y-0.5},{p.x+0.5,p.y+0.5}}
   if upgrade == "deconstruction-planner" then
     belt.order_deconstruction(f)
@@ -1018,12 +1019,20 @@ local function bot_upgrade(player,belt,upgrade,bool)
   end
   
   player.cursor_stack.set_stack{name = "blueprint", count = 1}
-  player.cursor_stack.create_blueprint{surface = surface, force = belt.force,area = a}
+  player.cursor_stack.create_blueprint{surface = surface, force = f,area = a}
   local old_blueprint = player.cursor_stack.get_blueprint_entities()
   old_blueprint[1].name = upgrade
+
+  --  belt.order_deconstruction(f) 
+  player.cursor_stack.set_stack{name = "deconstruction-planner", count = 1}
+  player.cursor_stack.clear_deconstruction_item();
+  player.cursor_stack.tile_selection_mode = defines.deconstruction_item.tile_filter_mode.never;
+  surface.deconstruct_area{ force= player.force, area=a };
+
   player.cursor_stack.set_stack{name = "blueprint", count = 1}
   player.cursor_stack.set_blueprint_entities(old_blueprint)
-  belt.order_deconstruction(f)
+
+
   player.cursor_stack.build_blueprint{surface = surface, force = f, position = p}
   player.cursor_stack.set_stack{name = "upgrade-builder2", count = 1}
 
@@ -1031,20 +1040,25 @@ end
 
 local function bot_upgrade_tile(player,tile,upgrade)
   local surface = player.surface
-  local p = belt.position
-  local d = belt.direction
-  local f = belt.force
-  local p = belt.position
-  local a = {{p.x-0.1,p.y-0.1},{p.x+0.1,p.y+0.1}}
+  local p = { x = tile.position.x + 0.5, y = tile.position.y + 0.5 }
+  local ab = {{p.x-0.1,p.y-0.1},{p.x+0.1,p.y+0.1}}
   
   player.cursor_stack.set_stack{name = "blueprint", count = 1}
-  player.cursor_stack.create_blueprint{surface = surface, force = belt.force,area = a}
+  player.cursor_stack.create_blueprint{surface = surface, force = player.force,area = ab, always_include_tiles=true}
+
   local old_blueprint = player.cursor_stack.get_blueprint_tiles()
   old_blueprint[1].name = upgrade
+
+  player.cursor_stack.set_stack{name = "deconstruction-planner", count = 1}
+  player.cursor_stack.clear_deconstruction_item();
+  player.cursor_stack.tile_selection_mode = defines.deconstruction_item.tile_filter_mode.always;
+  surface.deconstruct_area{ force= player.force, area=ab };
+
   player.cursor_stack.set_stack{name = "blueprint", count = 1}
   player.cursor_stack.set_blueprint_tiles(old_blueprint)
-  belt.order_deconstruction(f)
-  player.cursor_stack.build_blueprint{surface = surface, force = f, position = p}
+
+  --surface.deconstruct_area( a, player.force );
+  player.cursor_stack.build_blueprint{surface = surface, force = player.force, position = p}
   player.cursor_stack.set_stack{name = "upgrade-builder2", count = 1}
 
 end
