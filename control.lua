@@ -506,7 +506,7 @@ local function gui_set_rule(player, type, index, element )
             if related == name then
                 gui_display_message(frame, false, "upgrade-planner2-item-is-same")
                 --log( "Restore to:".. tostring( global["config-tmp"][player.name][index][type] ) );
-                if global["config-tmp"][player.name][index][type] then
+                if global["config-tmp"][player.name][index][type] ~= '' then
                     element.elem_value = global["config-tmp"][player.name][index][type]
 		else
                     global["config-tmp"][player.name][index][type] = nil
