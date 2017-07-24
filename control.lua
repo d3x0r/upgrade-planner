@@ -300,7 +300,7 @@ local function gui_open_frame(player)
     
     button_grid.add{
         type = "sprite-button",
-        name = "upgrade_blueprint",
+        name = "upgrade_blueprint2",
         sprite = "item/blueprint",
         tooltip = {"upgrade-planner2-config-button-upgrade-blueprint"},
         style = mod_gui.button_style
@@ -373,6 +373,7 @@ local function gui_save_changes(player)
 
             else
                 --game.write_file( 'planner.log', '(to config from tmp)Module is:'..tostring(global["config-tmp"][player.name][i].is_module)..'\n',true,1);
+                log( '(set storage from config-tmp)Module is:'..tostring(global["config-tmp"][player.name][i].from) );
                 global["config"][player.name][i] = {
                     from = global["config-tmp"][player.name][i].from,
                     to = global["config-tmp"][player.name][i].to,
@@ -577,7 +578,7 @@ local function gui_store(player, overwrite, index)
     global["storage"][player.name][name] = {}
 
     for i = 1, #global["config-tmp"][player.name] do
-        --game.write_file( 'planner.log', '(set storage from config-tmp)Module is:'..tostring(global["config-tmp"][player.name][i].is_module)..'\n',true,1);
+        --log( '(set storage from config-tmp)Module is:'..tostring(global["config-tmp"][player.name][i].from) );
         global["storage"][player.name][name][i] = {
             from = global["config-tmp"][player.name][i].from,
             to = global["config-tmp"][player.name][i].to,
@@ -1211,44 +1212,66 @@ local function upgrade_blueprint(player)
   end
   local config = global["config"][player.name]
   if not config then return end
-  local entities = stack.get_blueprint_entities()
-  for k, entity in pairs (entities) do
-    local items_changed = false;
-    for j, entry in pairs (config) do
-      if( entry.is_module ) then
-        --local m_inv = entity.;
-        if entity.items[entry.from] then
-           items_changed = true;
-           entity.items[entry.to] = entity.items[entry.from]
-           entity.items[entry.from] = 0
-        end
-      elseif( entry.is_rail ) then
-        if entities[k].name == entry.from_straight_rail then
-          entities[k].name = entry.to_straight_rail
-          break
-        elseif entities[k].name == entry.from_curved_rail then
-          entities[k].name = entry.to_curved_rail
-          break
-        end
-      elseif entry.from == entity.name then
-        entities[k].name = entry.to
-        break
-      end
+  local i,j,k;
+  for i=1, 1 do 
+    -- tiles are hard.  stone-brick = stone-path; hazard-concrete = hazard-concrete-right or hazard-concrete-left;
+    local entities
+    if i == 1 then
+      entities = stack.get_blueprint_entities()
+    elseif i == 2 then
+      entities = stack.get_blueprint_tiles()
     end
-    if( items_changed ) then
-       local new_items = {};
-       for item, count in pairs (entity.items) do
-         if count > 0 then
-            new_items[item] = count;
-         end
-       end
-       entity.items = new_items;
+    if entities then     
+      for _, entity in pairs (entities) do
+        local modules_changed = false;
+        for __, entry in pairs (config) do
+          if entry and entry.from then
+              log( "entry:"..entry.from .. " entity:".. entity.name );
+
+            if i ==1 and entry.is_module then
+              --local m_inv = entity.;
+              if entity.items[entry.from] then
+                 modules_changed = true;
+                 entity.items[entry.to] = entity.items[entry.from]
+                 entity.items[entry.from] = 0
+              end
+            elseif i == 1 and entry.is_rail then
+              if entity.name == entry.from_straight_rail then
+                entity.name = entry.to_straight_rail
+                break
+              elseif entity.name == entry.from_curved_rail then
+                entity.name = entry.to_curved_rail
+                break
+              end
+            elseif entry.from == entity.name then
+              log( "update".. entity.name .. ' to '.. entry.to );
+              entity.name = entry.to
+              break
+            end
+          end
+          if( modules_changed ) then
+             local new_items = {};
+             for item, count in pairs (entity.items) do
+               if count > 0 then
+                  new_items[item] = count;
+               end
+             end
+             entity.items = new_items;
+          end
+        end
+      end
+      if i == 1 then
+        stack.set_blueprint_entities(entities)
+      else
+        log( 'set tiles.' );
+        stack.set_blueprint_tiles(entities)
+      end
     end
   end
   local blueprint_icons = player.cursor_stack.blueprint_icons
   for k=1,4 do
     if( blueprint_icons[k] ) then
-      for j, entry in pairs (config) do
+      for _, entry in pairs (config) do
         if blueprint_icons[k].signal.name == entry.from then
           blueprint_icons[k].signal.name = entry.to
           break
@@ -1258,7 +1281,7 @@ local function upgrade_blueprint(player)
   end
   player.cursor_stack.blueprint_icons = blueprint_icons  
   stack.set_blueprint_entities(entities)
-  player.print({"blueprint-upgrade-sucessful"})
+  player.print({"blueprint-upgrade-successful"})
 end
 
 script.on_event(defines.events.on_player_joined_game, function(event)
@@ -1282,7 +1305,7 @@ script.on_event(defines.events.on_gui_click, function(event)
     local element = event.element
     local player = game.players[event.player_index]
     
-    if element.name == "upgrade_blueprint" then
+    if element.name == "upgrade_blueprint2" then
       upgrade_blueprint(player)
     end
 
