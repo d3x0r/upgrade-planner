@@ -5,6 +5,9 @@ local MAX_STORAGE_SIZE = 12
 local in_range_check_is_annoying = true
 local available_storage_entries = {}
 
+-- these items are checked as 'to' and disallow being set.
+local banned_targets = { "landfill" }
+
 local function glob_init()
     global["entity-recipes"] = global["entity-recipes"] or {}
     global["config"] = global["config"] or {}
@@ -466,6 +469,19 @@ local function gui_set_rule(player, type, index, element )
     local curved_rail = nil;
     local straight_rail = nil;
 
+    if type == "to" then 
+       for _,to_type in pairs(banned_targets) do
+          if to_type == type then
+            if global["config-tmp"][player.name][index][type] ~= '' then
+               element.elem_value = global["config-tmp"][player.name][index][type]
+            else
+               element.elem_value = nil
+            end
+            gui_display_message(frame, false, "upgrade-planner2-item-not-valid")
+            return
+          end
+       end
+    end
     if not name then
       ruleset_grid["upgrade-planner2-" .. type .. "-" .. index].tooltip = ""
       global["config-tmp"][player.name][index][type] = ""
@@ -492,7 +508,11 @@ local function gui_set_rule(player, type, index, element )
             for i = 1, #global["config-tmp"][player.name] do
                 if index ~= i and global["config-tmp"][player.name][i].from == name then
                     gui_display_message(frame, false, "upgrade-planner2-item-already-set")
-                    element.elem_value = global["config-tmp"][player.name][index][type]
+                    if global["config-tmp"][player.name][index][type] ~= '' then
+	                    element.elem_value = global["config-tmp"][player.name][index][type]
+                    else
+	                    element.elem_value = nil
+                    end
                     return
                 end
             end
