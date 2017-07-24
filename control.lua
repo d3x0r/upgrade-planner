@@ -36,18 +36,25 @@ local function count_keys(hashmap)
 
 end
 
-local function count_keys_dbg(hashmap)
-
-    local result = 0
-
-    for _, __ in pairs(hashmap) do
-        log( "map:".._.."="..tostring(__) );
-        result = result + 1
-    end
-
-    return result
-
+local function _log_keys(prefix,object)
+	for _, __ in pairs(object) do
+		log( prefix.._.."="..tostring(__) );
+		--if( type(__)=="string" or type(__)=="number" or type(__)=="function" or type(__)=="boolean" or type(__)=="nil"or type(__)=="thread") then
+		if( type(__)=="userdata" ) then
+			local meta = getmetatable(__) ;
+			if meta then
+				_log_keys( prefix.."  ", getmetatable(__) );
+			end
+		elseif type(__) == "table" then
+			_log_keys( prefix.."  ", __ );
+		end
+	end
 end
+
+local function log_keys(object)
+	_log_keys( ".  ", object )
+end
+
 
 local function get_config_item(player, index, type)
 
@@ -942,7 +949,7 @@ local function player_upgrade(player,orig_inv_name,belt,inv_name,upgrade,bool,is
           local assembling = surface.find_entities_filtered{area = a, name = upgrade}
           if not assembling[1] then 
             player.print("Upgrade planner error - Entity to raise was not found")
-            player.cursor_stack.set_stack{name = "upgrade-builder", count = 1}
+            player.cursor_stack.set_stack{name = "upgrade-builder2", count = 1}
             player.insert{name = orig_inv_name, count = item_count}
             return 
           end
@@ -960,7 +967,7 @@ local function player_upgrade(player,orig_inv_name,belt,inv_name,upgrade,bool,is
           if proxy[1]~= nil then
             proxy[1].destroy()
           end
-          player.cursor_stack.set_stack{name = "upgrade-builder", count = 1}      
+          player.cursor_stack.set_stack{name = "upgrade-builder2", count = 1}      
         else 
           --game.write_file( "planner.log", "Normal Replaceable.\n", true, 1 );
           if( new_item.type == "inserter" ) then
@@ -989,7 +996,7 @@ local function player_upgrade(player,orig_inv_name,belt,inv_name,upgrade,bool,is
 end
 
 local function remove_trees(event)
-  if event.item ~= "upgrade-builder" then return end
+  if event.item ~= "upgrade-builder2" then return end
   --If its a upgrade builder 
   local player = game.players[event.player_index]
   local config = global["config"][player.name]
@@ -1061,13 +1068,13 @@ local function bot_upgrade(player,belt,upgrade,bool)
   player.cursor_stack.set_blueprint_entities(old_blueprint)
   belt.order_deconstruction(f)
   player.cursor_stack.build_blueprint{surface = surface, force = f, position = p}
-  player.cursor_stack.set_stack{name = "upgrade-builder", count = 1}
+  player.cursor_stack.set_stack{name = "upgrade-builder2", count = 1}
 
 end
 
 function on_alt_selected_area(event)
 --this is a lot simpler... but less cool
-  if event.item == "upgrade-builder" then
+  if event.item == "upgrade-builder2" then
     local player = game.players[event.player_index]
     local config = global["config"][player.name]
     if config ~= nil then
@@ -1106,7 +1113,7 @@ end
 
 
 local function on_selected_area(event)
-  if event.item ~= "upgrade-builder" then return end--If its a upgrade builder 
+  if event.item ~= "upgrade-builder2" then return end--If its a upgrade builder 
   
   local player = game.players[event.player_index]
   local config = global["config"][player.name]
@@ -1158,7 +1165,7 @@ end
 
 
 local function bot_remove_trees(event)
-  if event.item ~= "upgrade-builder" then return end
+  if event.item ~= "upgrade-builder2" then return end
   --If its a upgrade builder 
   local player = game.players[event.player_index]
   local config = global["config"][player.name]
@@ -1213,60 +1220,80 @@ local function upgrade_blueprint(player)
   local config = global["config"][player.name]
   if not config then return end
   local i,j,k;
-  for i=1, 1 do 
-    -- tiles are hard.  stone-brick = stone-path; hazard-concrete = hazard-concrete-right or hazard-concrete-left;
-    local entities
-    if i == 1 then
-      entities = stack.get_blueprint_entities()
-    elseif i == 2 then
-      entities = stack.get_blueprint_tiles()
-    end
-    if entities then     
-      for _, entity in pairs (entities) do
-        local modules_changed = false;
-        for __, entry in pairs (config) do
-          if entry and entry.from then
-              log( "entry:"..entry.from .. " entity:".. entity.name );
-
-            if i ==1 and entry.is_module then
-              --local m_inv = entity.;
-              if entity.items[entry.from] then
-                 modules_changed = true;
-                 entity.items[entry.to] = entity.items[entry.from]
-                 entity.items[entry.from] = 0
-              end
-            elseif i == 1 and entry.is_rail then
-              if entity.name == entry.from_straight_rail then
-                entity.name = entry.to_straight_rail
-                break
-              elseif entity.name == entry.from_curved_rail then
-                entity.name = entry.to_curved_rail
-                break
-              end
-            elseif entry.from == entity.name then
-              log( "update".. entity.name .. ' to '.. entry.to );
-              entity.name = entry.to
+  -- tiles are hard.  stone-brick = stone-path; hazard-concrete = hazard-concrete-right or hazard-concrete-left;
+  local entities
+  local updated = false;
+  -- update blueprint entities
+  entities = stack.get_blueprint_entities()
+  if entities then
+    for _, entity in pairs (entities) do
+      local modules_changed = false;
+      for __, entry in pairs (config) do
+        if entry and entry.from then
+            log( "entry:"..entry.from .. " entity:".. entity.name );
+  
+          if entry.is_module then
+            --local m_inv = entity.;
+            if entity.items[entry.from] then
+               modules_changed = true;
+               entity.items[entry.to] = entity.items[entry.from]
+               entity.items[entry.from] = 0
+            end
+          elseif entry.is_rail then
+            if entity.name == entry.from_straight_rail then
+              entity.name = entry.to_straight_rail
+              updated = true;
+              break
+            elseif entity.name == entry.from_curved_rail then
+              entity.name = entry.to_curved_rail
+              updated = true;
               break
             end
-          end
-          if( modules_changed ) then
-             local new_items = {};
-             for item, count in pairs (entity.items) do
-               if count > 0 then
-                  new_items[item] = count;
-               end
-             end
-             entity.items = new_items;
+          elseif entry.from == entity.name then
+            entity.name = entry.to
+            updated = true;
+            break
           end
         end
-      end
-      if i == 1 then
-        stack.set_blueprint_entities(entities)
-      else
-        log( 'set tiles.' );
-        stack.set_blueprint_tiles(entities)
+        if( modules_changed ) then
+           local new_items = {};
+           for item, count in pairs (entity.items) do
+             if count > 0 then
+                new_items[item] = count;
+             end
+           end
+           entity.items = new_items;
+           updated = true;
+        end
       end
     end
+    if updated then
+      stack.set_blueprint_entities(entities)
+    end
+  end
+  -- End Update Blueprint Entities
+
+  -- update Tiles
+  entities = stack.get_blueprint_tiles()
+  if entities then     
+    updated = false;
+    for _,entity in pairs(entities) do
+      local proto = game.tile_prototypes[entity.name];
+      local placed_by_list = proto.items_to_place_this ;
+      for __, entry in pairs (config) do
+        if entry and entry.from then
+          for ___,placed_by in pairs(placed_by_list) do
+             if placed_by.name == entry.from then
+                entity.name = game.item_prototypes[entry.to].place_as_tile_result.result.name;
+                updated = true;
+             end
+          end
+        end
+      end      
+    end
+    if updated then
+      stack.set_blueprint_tiles(entities)
+    end    
   end
   local blueprint_icons = player.cursor_stack.blueprint_icons
   for k=1,4 do
@@ -1280,7 +1307,6 @@ local function upgrade_blueprint(player)
     end
   end
   player.cursor_stack.blueprint_icons = blueprint_icons  
-  stack.set_blueprint_entities(entities)
   player.print({"blueprint-upgrade-successful"})
 end
 
