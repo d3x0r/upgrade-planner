@@ -509,7 +509,7 @@ local function gui_set_rule(player, type, index, element )
                 if global["config-tmp"][player.name][index][type] ~= '' then
                     element.elem_value = global["config-tmp"][player.name][index][type]
 		else
-                    global["config-tmp"][player.name][index][type] = nil
+                    element.elem_value = nil
                 end
                 return
             end
