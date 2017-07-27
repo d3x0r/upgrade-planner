@@ -39,6 +39,8 @@ As a byproduct of allowing grass, you can put down brick in a desert, set a plan
 Replace rails with shift-click causes tracks to skew.  Rail offsets need to be applied during bot-upgrade mode.
 
 ## Changelog
+1.3.908 - fix localization strings for upgrade-builder2.
+
 1.3.907 - revert prohibition; fix flying text on tile out of items.
 
 1.3.906 - prohibit setting grass as a target tile type.  Fix a couple icon reversion during error crashes.
