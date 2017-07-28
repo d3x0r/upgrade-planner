@@ -22,7 +22,7 @@ if( player ) then
     if flow["upgrade-planner-config-button"] then
     	flow["upgrade-planner-config-button"].destroy();
      end;
-    if flow["upgrade-planner2-config-frame"] then
+    if flow["upgrade-planner-config-frame"] then
     	flow["upgrade-planner-config-button"].destroy();
      end;
 
