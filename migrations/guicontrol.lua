@@ -19,14 +19,15 @@ if( player ) then
     end
 
     local flow = mod_gui.get_button_flow(player)
+    local fflow = mod_gui.get_frame_flow(player)
     if flow["upgrade-planner-config-button"] then
     	flow["upgrade-planner-config-button"].destroy();
      end;
-    if flow["upgrade-planner-config-frame"] then
-    	flow["upgrade-planner-config-frame"].destroy();
-     end;
-    if flow["upgrade-planner-storage-frame"] then
-	flow["upgrade-planner-storage-frame"].destroy();
+    if fflow["upgrade-planner-config-frame"] then
+    	fflow["upgrade-planner-config-frame"].destroy();
+     end
+    if fflow["upgrade-planner-storage-frame"] then
+	fflow["upgrade-planner-storage-frame"].destroy();
 	end
 
 end;
