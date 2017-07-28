@@ -384,7 +384,7 @@ local function gui_save_changes(player)
 
             else
                 --game.write_file( 'planner.log', '(to config from tmp)Module is:'..tostring(global["config-tmp"][player.name][i].is_module)..'\n',true,1);
-                log( '(set storage from config-tmp)Module is:'..tostring(global["config-tmp"][player.name][i].from) );
+                --log( '(set storage from config-tmp)Module is:'..tostring(global["config-tmp"][player.name][i].from) );
                 global["config"][player.name][i] = {
                     from = global["config-tmp"][player.name][i].from,
                     to = global["config-tmp"][player.name][i].to,
@@ -1047,10 +1047,10 @@ local function bot_upgrade(player,belt,upgrade,bool)
   local old_blueprint = player.cursor_stack.get_blueprint_entities()
   old_blueprint[1].name = upgrade
 
-  --  belt.order_deconstruction(f) 
+  --belt.order_deconstruction(f) 
   player.cursor_stack.set_stack{name = "deconstruction-planner", count = 1}
   player.cursor_stack.clear_deconstruction_item();
-  player.cursor_stack.tile_selection_mode = defines.deconstruction_item.tile_filter_mode.never;
+  player.cursor_stack.tile_selection_mode = defines.deconstruction_item.tile_selection_mode.never;
   surface.deconstruct_area{ force= player.force, area=a };
 
   player.cursor_stack.set_stack{name = "blueprint", count = 1}
@@ -1075,7 +1075,7 @@ local function bot_upgrade_tile(player,tile,upgrade)
 
   player.cursor_stack.set_stack{name = "deconstruction-planner", count = 1}
   player.cursor_stack.clear_deconstruction_item();
-  player.cursor_stack.tile_selection_mode = defines.deconstruction_item.tile_filter_mode.always;
+  player.cursor_stack.tile_selection_mode = defines.deconstruction_item.tile_selection_mode.always;
   surface.deconstruct_area{ force= player.force, area=ab };
 
   player.cursor_stack.set_stack{name = "blueprint", count = 1}
