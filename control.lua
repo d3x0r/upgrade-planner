@@ -283,7 +283,7 @@ local function gui_open_frame(player)
         elem.elem_value = to
         ruleset_grid.add{
             type = "sprite-button",
-            name = "upgrade-planner2-clear-" .. i,
+            name = "upgrade-planner2-clear:" .. i,
             style = "red_slot_button_style",
             sprite = "utility/remove",
             tooltip = {"upgrade-planner2-config-clear", ""}
@@ -1428,7 +1428,7 @@ script.on_event(defines.events.on_gui_click, function(event)
             elseif op == "remove" then
                 gui_remove(player, index)
             elseif op == "clear" then
-                gui_clear_rule(player, index )
+                gui_clear_rule(player, tonumber(index) )
             end
         end
 

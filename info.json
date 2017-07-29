@@ -1,6 +1,6 @@
 {
     "name": "upgrade-planner2",
-    "version": "1.3.911",
+    "version": "1.3.912",
     "title": "Upgrade Builder and Planner 1.3",
     "author": "d3x0r & malk0lm & Klonan",
     "description": "Automatically upgrade buildings by hand or with construction robots.",
