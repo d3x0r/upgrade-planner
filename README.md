@@ -39,6 +39,8 @@ As a byproduct of allowing grass, you can put down brick in a desert, set a plan
 Replace rails with shift-click causes tracks to skew.  Rail offsets need to be applied during bot-upgrade mode.
 
 ## Changelog
+1.3.913 - remove migration script which kills original upgrade planner buttons.
+
 1.3.912 - Fix recycle icon to clear a configuration line.
 
 1.3.911 - update base version dependancy version (tile selection mode api change)
