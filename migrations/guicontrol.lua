@@ -1,4 +1,4 @@
-
+--[[
 require("mod-gui")
 
 
@@ -32,5 +32,5 @@ if( player ) then
 
 end;
 
-
+]]
 
