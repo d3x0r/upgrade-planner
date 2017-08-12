@@ -1060,17 +1060,17 @@ end
 
 local function bot_upgrade_tile(player,tile,upgrade)
   local surface = player.surface
+  local p = { x = tile.position.x + 0.5, y = tile.position.y + 0.5 }
+  local ab = {{p.x-0.1,p.y-0.1},{p.x+0.1,p.y+0.1}}
   
   player.cursor_stack.set_stack{name = "blueprint", count = 1}
   player.cursor_stack.create_blueprint{surface = surface, force = player.force,area = ab, always_include_tiles=true}
 
   local old_blueprint = player.cursor_stack.get_blueprint_tiles()
   old_blueprint[1].name = upgrade
+  player.cursor_stack.set_blueprint_tiles(old_blueprint)
 
   surface.create_entity{name="deconstructible-tile-proxy", position=tile.position, force = force}
-
-  player.cursor_stack.set_stack{name = "blueprint", count = 1}
-  player.cursor_stack.set_blueprint_tiles(old_blueprint)
 
   --surface.deconstruct_area( a, player.force );
   player.cursor_stack.build_blueprint{surface = surface, force = player.force, position = p}
