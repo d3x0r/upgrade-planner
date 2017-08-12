@@ -1047,11 +1047,7 @@ local function bot_upgrade(player,belt,upgrade,bool)
   local old_blueprint = player.cursor_stack.get_blueprint_entities()
   old_blueprint[1].name = upgrade
 
-  --belt.order_deconstruction(f) 
-  player.cursor_stack.set_stack{name = "deconstruction-planner", count = 1}
-  player.cursor_stack.clear_deconstruction_item();
-  player.cursor_stack.tile_selection_mode = defines.deconstruction_item.tile_selection_mode.never;
-  surface.deconstruct_area{ force= player.force, area=a };
+  belt.order_deconstruction(f) 
 
   player.cursor_stack.set_stack{name = "blueprint", count = 1}
   player.cursor_stack.set_blueprint_entities(old_blueprint)
@@ -1064,8 +1060,6 @@ end
 
 local function bot_upgrade_tile(player,tile,upgrade)
   local surface = player.surface
-  local p = { x = tile.position.x + 0.5, y = tile.position.y + 0.5 }
-  local ab = {{p.x-0.1,p.y-0.1},{p.x+0.1,p.y+0.1}}
   
   player.cursor_stack.set_stack{name = "blueprint", count = 1}
   player.cursor_stack.create_blueprint{surface = surface, force = player.force,area = ab, always_include_tiles=true}
@@ -1073,10 +1067,7 @@ local function bot_upgrade_tile(player,tile,upgrade)
   local old_blueprint = player.cursor_stack.get_blueprint_tiles()
   old_blueprint[1].name = upgrade
 
-  player.cursor_stack.set_stack{name = "deconstruction-planner", count = 1}
-  player.cursor_stack.clear_deconstruction_item();
-  player.cursor_stack.tile_selection_mode = defines.deconstruction_item.tile_selection_mode.always;
-  surface.deconstruct_area{ force= player.force, area=ab };
+  surface.create_entity{name="deconstructible-tile-proxy", position=tile.position, force = force}
 
   player.cursor_stack.set_stack{name = "blueprint", count = 1}
   player.cursor_stack.set_blueprint_tiles(old_blueprint)

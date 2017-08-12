@@ -11,9 +11,9 @@ data:extend({
     flags = {"goes-to-quickbar"},
     selection_color = {r = 0.2, g = 0.8, b = 0.2, a = 0.2},
     alt_selection_color = {r = 0.2, g = 0.2, b = 0.8, a = 0.2},
-    selection_mode = {"buildable-type","items-to-place","tiles","blueprint"},
+    selection_mode = {"blueprint"},
     always_include_tiles = true,
-    alt_selection_mode = {"buildable-type","blueprint","items-to-place","tiles"},
+    alt_selection_mode = {"blueprint"},
     selection_cursor_box_type = "entity",
     alt_selection_cursor_box_type = "copy"
     
