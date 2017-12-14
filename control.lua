@@ -822,7 +822,7 @@ local function player_upgrade(player,orig_inv_name,belt,inv_name,upgrade,bool,is
 
     if player.can_reach_entity(belt) or in_range_check_is_annoying then
       local new_item             	
-      script.raise_event(defines.events.on_preplayer_mined_item,{player_index = player.index, entity = belt})
+      script.raise_event(defines.events.on_pre_player_mined_item,{player_index = player.index, entity = belt})
       if upgrade ~="deconstruction-planner" then --Goddamn legacy features
         if belt.type == "underground-belt" then 
           if belt.neighbours and bool then

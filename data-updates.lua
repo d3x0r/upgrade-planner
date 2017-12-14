@@ -11,5 +11,10 @@ end
 fix_tiles( data.raw.tile );
 ]]
 
-data.raw["tile"]["grass"].can_be_part_of_blueprint = true
+
+data.raw["tile"]["grass-1"].can_be_part_of_blueprint = true
+data.raw["tile"]["grass-2"].can_be_part_of_blueprint = true
+data.raw["tile"]["grass-3"].can_be_part_of_blueprint = true
+data.raw["tile"]["grass-4"].can_be_part_of_blueprint = true
+
 --data.raw["tile"]["red-desert"].can_be_part_of_blueprint = true
