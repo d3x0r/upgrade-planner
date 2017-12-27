@@ -85,7 +85,7 @@ end
 local function add_storage_buttons( player,storage_frame )
     local storage_grid = storage_frame.add{
         type = "table",
-        colspan = 4,
+        column_count = 4,
         name = "upgrade-planner2-storage-grid"
     }
 
@@ -212,9 +212,9 @@ local function gui_open_frame(player)
 
     local ruleset_grid = frame.add{
         type = "table",
-        colspan = 6,
+        column_count = 6,
         name = "upgrade-planner2-ruleset-grid",
-        style = "slot_table_style"
+        style = "slot_table"
     }
 
     ruleset_grid.add{
@@ -259,7 +259,7 @@ local function gui_open_frame(player)
         local elem = ruleset_grid.add{ 
             type = "choose-elem-button",
             name = "upgrade-planner2-from-" .. i,
-            style = "slot_button_style",
+            style = "slot_button",
             --sprite = sprite,
             elem_type = "item",
             tooltip = tooltip
@@ -275,7 +275,7 @@ local function gui_open_frame(player)
         local elem = ruleset_grid.add{
             type = "choose-elem-button",
             name = "upgrade-planner2-to-" .. i,
-            --style = "slot_button_style",
+            --style = "slot_button",
             --sprite = sprite,
             elem_type = "item",
             tooltip = tooltip
@@ -284,7 +284,7 @@ local function gui_open_frame(player)
         ruleset_grid.add{
             type = "sprite-button",
             name = "upgrade-planner2-clear:" .. i,
-            style = "red_slot_button_style",
+            style = "red_slot_button",
             sprite = "utility/remove",
             tooltip = {"upgrade-planner2-config-clear", ""}
         }
@@ -292,7 +292,7 @@ local function gui_open_frame(player)
 
     local button_grid = frame.add{
         type = "table",
-        colspan = 2,
+        column_count = 2,
         name = "upgrade-planner2-button-grid"
     }
 
@@ -300,13 +300,13 @@ local function gui_open_frame(player)
         type = "button",
         name = "upgrade-planner2-apply",
         caption = {"upgrade-planner2-config-button-apply"},
-        style = mod_gui.button_style
+        style = mod_gui.button
     }
     button_grid.add{
         type = "button",
         name = "upgrade-planner2-clear-all",
         caption = {"upgrade-planner2-config-button-clear-all"},
-        style = mod_gui.button_style
+        style = mod_gui.button
     }
     
     button_grid.add{
@@ -314,7 +314,7 @@ local function gui_open_frame(player)
         name = "upgrade_blueprint2",
         sprite = "item/blueprint",
         tooltip = {"upgrade-planner2-config-button-upgrade-blueprint"},
-        style = mod_gui.button_style
+        style = mod_gui.button
     }
 
     storage_frame = gui.add{
@@ -333,7 +333,7 @@ local function gui_open_frame(player)
 
     local storage_frame_buttons = storage_frame.add{
         type = "table",
-        colspan = 3,
+        column_count = 3,
         name = "upgrade-planner2-storage-buttons"
     }
 
@@ -939,7 +939,9 @@ local function player_upgrade(player,orig_inv_name,belt,inv_name,upgrade,bool,is
             player.insert{name = orig_inv_name, count = item_count}
             return 
           end
+   log( "raise event?" );
           script.raise_event(defines.events.on_built_entity,{player_index = player.index, created_entity = assembling[1]})
+    log( "raised event?" );
           --Give back the inventory to the new entity
           for j, items in pairs (inventories) do
             for l, contents in pairs (items.contents) do
@@ -1132,10 +1134,12 @@ end
 
 
 local function on_selected_area(event)
+  log( "selcted_area..."..event.item );
   if event.item ~= "upgrade-builder2" then return end--If its a upgrade builder 
   
   local player = game.players[event.player_index]
   local config = global["config"][player.name]
+  log( "config?"..tostring(config))
   if config == nil then return end
   
   local surface = player.surface
@@ -1150,7 +1154,7 @@ local function on_selected_area(event)
           if not global.temporary_ignore[entry.from] then 
             for ___,placed_by in pairs(placed_by_list) do
                if placed_by.name == entry.from then
-                  
+                  log( "Found replacable...".. entry.from );
                   if player.get_item_count(entry.from) > 0 or player.cheat_mode then 
                   -- can't mine tiles?
                   --   script.raise_event(defines.events.on_preplayer_mined_item,{player_index = player.index, tile = tile})
@@ -1210,6 +1214,7 @@ local function on_selected_area(event)
             surface.create_entity{name = "flying-text", position = {belt.position.x-1.3,belt.position.y-0.5}, text = {"insufficient-items"}, color = {r=1,g=0.6,b=0.6}}
           end
         else
+          log( "is "..config[i].from..'='..belt.name )
           if config[i].from == belt.name then
               upgrade = config[i];
               upgrade_to = config[i].to;
